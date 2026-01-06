@@ -69,7 +69,7 @@ export function Fleet() {
   const activeCar = fleetData[activeTab];
 
   return (
-    <section ref={containerRef} className="relative w-full bg-[#050505] py-24 md:py-32 text-white overflow-hidden">
+    <section ref={containerRef} id="fleet" className="relative w-full bg-[#050505] py-24 md:py-32 text-white overflow-hidden">
       
       {/* --- BACKGROUND DECOR (Consistent with Hero & Features) --- */}
       <div className="absolute inset-0 pointer-events-none">
