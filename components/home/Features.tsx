@@ -1,0 +1,186 @@
+"use client";
+
+import { useRef } from "react";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { ShieldCheck, Clock, MapPin, Headphones, ArrowRight, Sparkles } from "lucide-react";
+
+gsap.registerPlugin(ScrollTrigger);
+
+const features = [
+  {
+    id: "01",
+    title: "Safe & Sanitized",
+    desc: "Your safety is our priority. Every car is deep-cleaned before arrival, and drivers follow strict hygiene protocols.",
+    icon: <ShieldCheck className="h-8 w-8 text-white" />,
+  },
+  {
+    id: "02",
+    title: "On-Time Pickup",
+    desc: "We respect your schedule. Our chauffeurs arrive 15 minutes early to ensure a stress-free departure, every time.",
+    icon: <Clock className="h-8 w-8 text-white" />,
+  },
+  {
+    id: "03",
+    title: "Expert Chauffeurs",
+    desc: "Travel with verified experts who know every route in Lucknow, Ayodhya, and NCR. Courteous, professional, and discreet.",
+    icon: <MapPin className="h-8 w-8 text-white" />,
+  },
+  {
+    id: "04",
+    title: "24/7 Support",
+    desc: "Never feel stranded. Our dedicated support team is active round-the-clock to assist you with bookings or queries.",
+    icon: <Headphones className="h-8 w-8 text-white" />,
+  },
+];
+
+export function Features() {
+  const containerRef = useRef<HTMLElement>(null);
+  const sliderWrapperRef = useRef<HTMLDivElement>(null);
+  const sliderTrackRef = useRef<HTMLDivElement>(null);
+
+  useGSAP(() => {
+    const container = containerRef.current;
+    const wrapper = sliderWrapperRef.current;
+    const track = sliderTrackRef.current;
+    
+    if (!container || !wrapper || !track) return;
+
+    const mm = gsap.matchMedia();
+
+    mm.add("(min-width: 768px)", () => {
+      const getScrollAmount = () => track.scrollWidth - wrapper.offsetWidth;
+      const scrollAmount = getScrollAmount();
+
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: container,
+          start: "top top",
+          end: () => `+=${scrollAmount}`,
+          pin: true,
+          scrub: 1,
+          invalidateOnRefresh: true,
+        },
+      });
+
+      // Move track left
+      tl.to(track, { x: -scrollAmount, ease: "none" });
+
+      // Parallax Icon Effect
+      tl.to(".parallax-icon", { x: 60, ease: "none" }, "<");
+      
+      // Parallax Giant Numbers (Move slightly slower than card for depth)
+      tl.to(".giant-number", { x: 100, ease: "none" }, "<");
+    });
+
+    return () => mm.revert();
+  }, { scope: containerRef });
+
+  return (
+    <section
+      ref={containerRef}
+      className="relative w-full bg-[#050505] text-white overflow-hidden"
+    >
+      {/* --- BACKGROUND DECOR (Matching Hero) --- */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-1/4 left-[-10%] w-[500px] h-[500px] bg-purple-900/10 rounded-full blur-[120px]" />
+        <div className="absolute bottom-0 right-[-10%] w-[600px] h-[600px] bg-blue-900/10 rounded-full blur-[120px]" />
+        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20" />
+      </div>
+
+      <div className="flex flex-col md:flex-row h-auto md:h-screen w-full relative z-10">
+        
+        {/* --- LEFT PANEL: TITLE --- */}
+        <div className="
+          w-full md:w-[35%] 
+          shrink-0 
+          flex flex-col justify-center 
+          px-6 py-16 md:p-12 md:pl-16 
+          z-20
+        ">
+          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-purple-400 mb-6">
+            <Sparkles size={12} /> Why Choose Aditi?
+          </div>
+          
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-medium leading-[1.1]">
+            Elevating your <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-gray-500 via-gray-200 to-gray-500">
+              commute experience
+            </span>
+          </h2>
+          
+          <p className="mt-8 text-gray-400 max-w-sm text-sm leading-relaxed hidden md:block border-l border-purple-500/30 pl-4">
+            We don't just drive you; we care for you. Experience the difference with our premium fleet and verified chauffeurs.
+          </p>
+
+          {/* Mobile Swipe Indicator */}
+          <div className="flex md:hidden items-center gap-2 mt-8 text-xs font-medium text-purple-400 animate-pulse">
+            <span>Swipe to explore</span> <ArrowRight size={14} />
+          </div>
+        </div>
+
+        {/* --- RIGHT PANEL: SLIDER --- */}
+        <div 
+          ref={sliderWrapperRef}
+          className="w-full md:w-[65%] relative flex items-center overflow-hidden pb-12 md:pb-0"
+        >
+          <div
+            ref={sliderTrackRef}
+            className="flex gap-4 px-4 md:px-0 md:gap-12 w-max items-center overflow-x-auto snap-x snap-mandatory md:overflow-visible no-scrollbar"
+          >
+            {/* Desktop Spacer */}
+            <div className="hidden md:block w-12 shrink-0" />
+
+            {features.map((f, i) => (
+              <div
+                key={i}
+                className="
+                  group relative flex flex-col justify-between overflow-hidden
+                  shrink-0 snap-center 
+                  rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl
+                  transition-all duration-500 hover:border-purple-500/50 hover:bg-purple-900/10 hover:shadow-[0_0_50px_rgba(168,85,247,0.1)]
+                  
+                  /* Mobile: 85% width to show peek of next card */
+                  h-[360px] w-[85vw] p-6
+                  
+                  /* Desktop: Fixed size */
+                  md:h-[500px] md:w-[380px] md:p-10
+                "
+              >
+                {/* GIANT BACKGROUND NUMBER (Decor) */}
+                <span className="giant-number absolute -right-4 -top-8 text-[10rem] font-bold text-white/5 select-none pointer-events-none transition-transform duration-700 group-hover:text-purple-500/10">
+                  {f.id}
+                </span>
+
+                {/* Top: Icon */}
+                <div className="relative z-10 flex justify-between items-start">
+                  <div className="parallax-icon flex h-14 w-14 items-center justify-center rounded-2xl bg-white/5 border border-white/10 text-purple-300 transition-all duration-300 group-hover:bg-purple-500 group-hover:text-white group-hover:scale-110 shadow-lg">
+                    {f.icon}
+                  </div>
+                </div>
+
+                {/* Bottom: Text */}
+                <div className="relative z-10 space-y-4 md:space-y-6">
+                  <h3 className="text-2xl md:text-3xl font-semibold text-white group-hover:text-purple-200 transition-colors">
+                    {f.title}
+                  </h3>
+                  <p className="text-sm md:text-base leading-relaxed text-gray-400 group-hover:text-gray-300">
+                    {f.desc}
+                  </p>
+
+                  <div className="flex items-center gap-2 text-sm font-bold text-purple-400 opacity-0 -translate-x-4 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-0">
+                    <span>Learn More</span> <ArrowRight size={14} />
+                  </div>
+                </div>
+              </div>
+            ))}
+            
+            {/* Right Buffer */}
+            <div className="w-6 md:w-24 shrink-0" />
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
