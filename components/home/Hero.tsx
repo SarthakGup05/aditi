@@ -4,12 +4,10 @@ import { useRef, useState } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { 
-  MapPin, 
   Youtube, 
   Twitter, 
   Instagram, 
   Linkedin, 
-  Menu,
   PlayCircle,
   Star
 } from "lucide-react";
@@ -25,6 +23,17 @@ export function Hero() {
   const socialRef = useRef(null);
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  // --- SCROLL HANDLER ---
+  const scrollToFleet = () => {
+    const fleetSection = document.getElementById("fleet");
+    if (fleetSection) {
+      fleetSection.scrollIntoView({ behavior: "smooth" });
+    } else {
+      // Fallback if ID is missing or user is on another page
+      window.location.href = "/#fleet";
+    }
+  };
 
   useGSAP(() => {
     const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
@@ -69,18 +78,14 @@ export function Hero() {
       <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 pointer-events-none" />
       
       
-      {/* --- NAVBAR --- */}
-
-
-
       {/* --- MAIN HERO CONTENT --- */}
-      <div className="relative z-10 flex flex-col md:flex-row h-full w-full flex-1 px-6 md:px-12 pt-10 md:pt-0">
+      <div className="relative z-10 flex flex-col md:flex-row h-full w-full flex-1 px-6 md:px-12 pt-32 md:pt-20">
         
         {/* LEFT COLUMN: TEXT */}
-        <div className="flex flex-col justify-center w-full md:w-[50%] pt-10 md:pt-0">
+        <div className="flex flex-col justify-center w-full md:w-[50%]">
           <div ref={textGroupRef}>
             
-            {/* Tagline: Authority & Trust */}
+            {/* Tagline */}
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 text-xs font-bold uppercase tracking-widest mb-6">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
@@ -89,7 +94,7 @@ export function Hero() {
               #1 Taxi Service in Lucknow
             </div>
 
-            {/* H1 Heading: Primary Keywords */}
+            {/* Heading */}
             <h1 className="text-4xl font-medium leading-[1.1] tracking-tight md:text-[5.5rem] lg:text-[6.5rem] mb-6">
               Premium Car <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-200 via-white to-purple-200">
@@ -97,7 +102,7 @@ export function Hero() {
               </span>
             </h1>
 
-            {/* Subtext: Secondary Keywords & Value Prop */}
+            {/* Subtext */}
             <p className="text-sm md:text-base leading-relaxed text-gray-400 max-w-lg mb-8">
               Experience safe and reliable mobility with <strong className="text-white">Aditi Tour & Travel</strong>. 
               Specializing in luxury airport transfers, corporate fleet management, and comfortable outstation 
@@ -109,12 +114,18 @@ export function Hero() {
               <Button className="h-12 w-full md:w-auto rounded-full bg-white text-black hover:bg-gray-200 px-8 text-base font-bold">
                 Call Taxi Now
               </Button>
-              <Button variant="ghost" className="h-12 w-full md:w-auto gap-2 rounded-full border border-white/10 text-white hover:bg-white/10 px-6">
+              
+              {/* --- VIEW FLEET BUTTON (SCROLLS TO FLEET) --- */}
+              <Button 
+                variant="ghost" 
+                onClick={scrollToFleet}
+                className="h-12 w-full md:w-auto gap-2 rounded-full border border-white/10 text-white hover:bg-white/10 px-6"
+              >
                 <PlayCircle size={18} /> View Our Fleet
               </Button>
             </div>
             
-            {/* Social Proof / Trust Indicators */}
+            {/* Social Proof */}
             <div className="mt-12 flex items-center gap-4 text-xs text-gray-500">
               <div className="flex items-center gap-1 text-yellow-400">
                 <Star size={16} fill="currentColor" />
@@ -128,11 +139,9 @@ export function Hero() {
           </div>
         </div>
 
-
         {/* RIGHT COLUMN: CAR IMAGE */}
-        <div className="relative w-full md:w-[50%] h-[40vh] md:h-auto flex items-end md:items-center justify-center md:justify-end pointer-events-none">
+        <div className="relative w-full md:w-[50%] h-[40vh] md:h-auto flex items-end md:items-center justify-center md:justify-end pointer-events-none mt-8 md:mt-0">
           <div ref={carRef} className="relative w-full md:w-[130%] md:-mr-[20%] aspect-[16/9]">
-             {/* Using a Premium White Car Image to match 'Wedding/Corporate/Travel' vibe */}
              <Image 
               src="https://purepng.com/public/uploads/large/purepng.com-taxitaxicabvehicletaxicabyellow-cab-17015276774220zoaa.png" 
               alt="Luxury Taxi Service in Lucknow - Aditi Tour & Travel"
@@ -145,7 +154,6 @@ export function Hero() {
         </div>
 
       </div>
-
 
       {/* --- SOCIAL SIDEBAR --- */}
       <div ref={socialRef} className="absolute right-8 top-1/2 hidden -translate-y-1/2 flex-col gap-6 text-gray-500 md:flex z-50">
