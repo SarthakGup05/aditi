@@ -16,11 +16,11 @@ import { useGSAP } from "@gsap/react";
 
 export function Hero() {
   const containerRef = useRef(null);
-  const navRef = useRef(null);
-  const textGroupRef = useRef(null);
-  const carRef = useRef(null);
-  const blobRef = useRef(null);
-  const socialRef = useRef(null);
+  
+  // Removed individual refs for animation targets to prevent null errors
+  // We will use className selectors instead.
+
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   // --- SCROLL HANDLER ---
   const scrollToFleet = () => {
@@ -35,39 +35,38 @@ export function Hero() {
   useGSAP(() => {
     const mm = gsap.matchMedia();
 
-    // --- DESKTOP ANIMATIONS (Complex & Cinematic) ---
+    // --- DESKTOP ANIMATIONS ---
     mm.add("(min-width: 768px)", () => {
       const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
 
-      // Initial Setup
-      gsap.set([textGroupRef.current, navRef.current, socialRef.current], { y: 30, opacity: 0 });
-      gsap.set(carRef.current, { x: 100, opacity: 0, scale: 0.95 });
+      // 1. Initial States (Using class selectors)
+      gsap.set([".hero-text", ".hero-nav", ".hero-social"], { y: 30, opacity: 0 });
+      gsap.set(".hero-car", { x: 100, opacity: 0, scale: 0.95 });
 
-      // Sequence
-      tl.to(navRef.current, { y: 0, opacity: 1, duration: 0.8 })
-        .to(textGroupRef.current, { y: 0, opacity: 1, duration: 1 }, "-=0.5")
-        .to(carRef.current, { x: 0, opacity: 1, scale: 1, duration: 1.2, ease: "back.out(1.2)" }, "-=0.8")
-        .to(socialRef.current, { y: 0, opacity: 1, duration: 0.8 }, "-=0.6");
+      // 2. Sequence
+      tl.to(".hero-nav", { y: 0, opacity: 1, duration: 0.8 })
+        .to(".hero-text", { y: 0, opacity: 1, duration: 1 }, "-=0.5")
+        .to(".hero-car", { x: 0, opacity: 1, scale: 1, duration: 1.2, ease: "back.out(1.2)" }, "-=0.8")
+        .to(".hero-social", { y: 0, opacity: 1, duration: 0.8 }, "-=0.6");
 
-      // Interactive Parallax (Only attach listener on Desktop)
+      // 3. Interactive Parallax
       const handleMouseMove = (e: MouseEvent) => {
         const { clientX, clientY } = e;
         const xPos = (clientX / window.innerWidth - 0.5) * 20;
         const yPos = (clientY / window.innerHeight - 0.5) * 20;
 
-        gsap.to(carRef.current, { x: xPos, y: yPos, duration: 1, ease: "power1.out", overwrite: "auto" });
-        gsap.to(blobRef.current, { x: -xPos * 2, y: -yPos * 2, duration: 2, ease: "power1.out", overwrite: "auto" });
+        gsap.to(".hero-car", { x: xPos, y: yPos, duration: 1, ease: "power1.out", overwrite: "auto" });
+        gsap.to(".hero-blob", { x: -xPos * 2, y: -yPos * 2, duration: 2, ease: "power1.out", overwrite: "auto" });
       };
 
       window.addEventListener("mousemove", handleMouseMove);
       return () => window.removeEventListener("mousemove", handleMouseMove);
     });
 
-    // --- MOBILE ANIMATIONS (Lightweight & Fast) ---
+    // --- MOBILE ANIMATIONS ---
     mm.add("(max-width: 767px)", () => {
-      // Simple Fade-in batch (No scaling, no complex transforms)
       gsap.fromTo(
-        [navRef.current, textGroupRef.current, carRef.current],
+        [".hero-nav", ".hero-text", ".hero-car"],
         { y: 20, opacity: 0 },
         { 
           y: 0, 
@@ -75,12 +74,12 @@ export function Hero() {
           duration: 0.6, 
           stagger: 0.1, 
           ease: "power2.out",
-          clearProps: "all" // Cleanup to prevent style conflicts
+          clearProps: "all" 
         }
       );
     });
 
-  }, { scope: containerRef });
+  }, { scope: containerRef }); // Scope ensures we only select elements inside THIS component
 
   return (
     <section 
@@ -89,20 +88,19 @@ export function Hero() {
     >
       
       {/* --- BACKGROUND LAYERS --- */}
-      {/* Mobile Opt: Reduced blur radius significantly to save GPU power */}
-      <div ref={blobRef} className="absolute inset-0 pointer-events-none will-change-transform">
+      <div className="hero-blob absolute inset-0 pointer-events-none will-change-transform">
         <div className="absolute top-[-5%] right-[-10%] h-[250px] w-[250px] md:h-[800px] md:w-[800px] rounded-full bg-purple-900/20 blur-[40px] md:blur-[120px]" />
         <div className="absolute bottom-[-5%] left-[-10%] h-[200px] w-[200px] md:h-[600px] md:w-[600px] rounded-full bg-blue-900/10 blur-[40px] md:blur-[100px]" />
       </div>
       <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 pointer-events-none" />
       
-      
       {/* --- MAIN HERO CONTENT --- */}
-      <div className="relative z-10 flex flex-col md:flex-row h-full w-full flex-1 px-6 md:px-12 pt-24 md:pt-20">
+      <div className="hero-nav relative z-10 flex flex-col md:flex-row h-full w-full flex-1 px-6 md:px-12 pt-24 md:pt-20">
         
         {/* LEFT COLUMN: TEXT */}
         <div className="flex flex-col justify-center w-full md:w-[50%]">
-          <div ref={textGroupRef} className="will-change-transform">
+          {/* Added 'hero-text' class for GSAP */}
+          <div className="hero-text will-change-transform">
             
             {/* Tagline */}
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 text-xs font-bold uppercase tracking-widest mb-6">
@@ -114,7 +112,6 @@ export function Hero() {
             </div>
 
             {/* Heading */}
-            {/* Mobile Opt: Used tighter leading and tracking for better readability on small screens */}
             <h1 className="text-4xl sm:text-5xl font-medium leading-[1.1] tracking-tight md:text-[5.5rem] lg:text-[6.5rem] mb-6">
               Premium Car <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-200 via-white to-purple-200">
@@ -160,8 +157,8 @@ export function Hero() {
 
         {/* RIGHT COLUMN: CAR IMAGE */}
         <div className="relative w-full md:w-[50%] h-[35vh] md:h-auto flex items-end md:items-center justify-center md:justify-end pointer-events-none mt-8 md:mt-0">
-          <div ref={carRef} className="will-change-transform relative w-full md:w-[130%] md:-mr-[20%] aspect-[16/9]">
-             {/* Mobile Opt: Priority loading ensures LCP (Largest Contentful Paint) is fast */}
+          {/* Added 'hero-car' class for GSAP */}
+          <div className="hero-car will-change-transform relative w-full md:w-[130%] md:-mr-[20%] aspect-[16/9]">
              <Image 
               src="https://purepng.com/public/uploads/large/purepng.com-taxitaxicabvehicletaxicabyellow-cab-17015276774220zoaa.png" 
               alt="Luxury Taxi Service in Lucknow - Aditi Tour & Travel"
@@ -175,8 +172,9 @@ export function Hero() {
 
       </div>
 
-      {/* --- SOCIAL SIDEBAR (Hidden on Mobile) --- */}
-      <div ref={socialRef} className="absolute right-8 top-1/2 hidden -translate-y-1/2 flex-col gap-6 text-gray-500 md:flex z-50">
+      {/* --- SOCIAL SIDEBAR --- */}
+      {/* Added 'hero-social' class for GSAP */}
+      <div className="hero-social absolute right-8 top-1/2 hidden -translate-y-1/2 flex-col gap-6 text-gray-500 md:flex z-50">
         <a href="#" aria-label="Youtube" className="hover:text-white hover:scale-110 cursor-pointer transition-all"><Youtube size={20} /></a>
         <a href="#" aria-label="Twitter" className="hover:text-white hover:scale-110 cursor-pointer transition-all"><Twitter size={20} /></a>
         <a href="#" aria-label="LinkedIn" className="hover:text-white hover:scale-110 cursor-pointer transition-all"><Linkedin size={20} /></a>

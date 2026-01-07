@@ -9,7 +9,7 @@ import { PopularRoutes } from "@/components/home/Services";
 export default function Home() {
   return (
     <>
-      {/* <Hero /> */}
+      <Hero />
       <Features />
       <PopularRoutes/>
       <Fleet />
