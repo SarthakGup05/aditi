@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import Lenis from "lenis";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -13,51 +13,50 @@ export default function SmoothWrapper({
   children: React.ReactNode;
 }) {
   useEffect(() => {
-    // 1. Robust Mobile Detection
-    // Checks for touch capability AND screen width
+    // 1. Performance Guard: Strict Mobile Detection
+    // Checks for touch capability OR narrow screens
     const isMobile =
       typeof window !== "undefined" &&
-      ("ontouchstart" in window || window.innerWidth < 768);
+      ("ontouchstart" in window || window.innerWidth < 1024);
 
-    // 2. CRITICAL OPTIMIZATION: Return early if mobile.
-    // This forces "Native Scroll" on phones.
-    // It fixes the footer overlap, address bar jitter, and battery drain.
-    if (isMobile) {
-      return; 
-    }
+    // 2. STOP EXECUTION ON MOBILE
+    // If mobile, we return immediately. No Lenis, no listeners, no GSAP ticker overhead.
+    // This restores 100% native scrolling speed.
+    if (isMobile) return;
 
-    // --- DESKTOP ONLY LOGIC BELOW ---
-
+    // --- DESKTOP LOGIC (Only runs on PC/Mac) ---
+    
     const lenis = new Lenis({
       duration: 1.2,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // Exponential easing for premium feel
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // Exponential easing (Premium feel)
       orientation: "vertical",
       gestureOrientation: "vertical",
       smoothWheel: true,
-      syncTouch: false, // Ensure touch devices don't force sync if they slip through
+      syncTouch: false, // Explicitly disable touch syncing to be safe
     });
 
-    // 3. Sync ScrollTrigger
+    // 3. Connect GSAP ScrollTrigger
     lenis.on("scroll", ScrollTrigger.update);
 
-    // 4. GSAP Ticker Integration (Best Performance)
+    // 4. Optimized Animation Loop
+    // We bind Lenis to GSAP's ticker. This ensures Lenis updates exactly when 
+    // GSAP updates, preventing "jitter" between the scroll position and animations.
     const update = (time: number) => {
       lenis.raf(time * 1000);
     };
 
     gsap.ticker.add(update);
 
-    // 5. Cleanup
+    // 5. Lag Smoothing (Optional but recommended for heavy 3D/GL sites)
+    // Prevents GSAP from "jumping" animations if a frame drops.
+    // gsap.ticker.lagSmoothing(0); 
+
     return () => {
       gsap.ticker.remove(update);
       lenis.destroy();
     };
   }, []);
 
-  return (
-    // Optional: Add 'overflow-x-hidden' to prevent horizontal scrollbars appearing during load
-    <div className="w-full overflow-x-hidden">
-      {children}
-    </div>
-  );
+  // Return a fragment to add ZERO extra DOM nodes
+  return <>{children}</>;
 }
