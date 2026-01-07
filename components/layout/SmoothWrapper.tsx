@@ -12,59 +12,52 @@ export default function SmoothWrapper({
 }: {
   children: React.ReactNode;
 }) {
-  const lenisRef = useRef<Lenis | null>(null);
-
   useEffect(() => {
-    // 1. Mobile Detection
-    // We check if the device is touch-enabled or has a small screen.
-    // This allows us to disable expensive smoothing on weaker devices.
+    // 1. Robust Mobile Detection
+    // Checks for touch capability AND screen width
     const isMobile =
       typeof window !== "undefined" &&
-      (window.innerWidth < 768 || "ontouchstart" in window);
+      ("ontouchstart" in window || window.innerWidth < 768);
+
+    // 2. CRITICAL OPTIMIZATION: Return early if mobile.
+    // This forces "Native Scroll" on phones.
+    // It fixes the footer overlap, address bar jitter, and battery drain.
+    if (isMobile) {
+      return; 
+    }
+
+    // --- DESKTOP ONLY LOGIC BELOW ---
 
     const lenis = new Lenis({
-      // 2. Mobile Optimization Settings
-      // Lower duration on mobile makes it feel snappier and less "floaty"
-      duration: isMobile ? 0 : 1.2, 
-      
-      // Use native scrolling for touch devices if possible for max performance
-      // (Lenis usually handles this by default, but explicit settings help)
-      smoothWheel: true,
-      
-      // 3. Easing
-      // On mobile, a simpler easing function is less CPU intensive
-      easing: isMobile 
-        ? (t) => t // Linear (native-like) feel for mobile
-        : (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // Exponential for desktop
-        
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // Exponential easing for premium feel
       orientation: "vertical",
       gestureOrientation: "vertical",
-      touchMultiplier: 2, // Increases touch sensitivity for faster scrolling
+      smoothWheel: true,
+      syncTouch: false, // Ensure touch devices don't force sync if they slip through
     });
 
-    lenisRef.current = lenis;
-
-    // Sync ScrollTrigger with Lenis
+    // 3. Sync ScrollTrigger
     lenis.on("scroll", ScrollTrigger.update);
 
-    // 4. FIX MEMORY LEAK
-    // We must define the ticker function as a variable so we can remove THE SAME function later.
+    // 4. GSAP Ticker Integration (Best Performance)
     const update = (time: number) => {
       lenis.raf(time * 1000);
     };
 
     gsap.ticker.add(update);
 
-    // 5. Performance: Allow Lag Smoothing
-    // Removed 'lagSmoothing(0)'. Default GSAP smoothing allows the animation 
-    // to skip frames if the CPU is choked, preventing the phone from freezing.
-
+    // 5. Cleanup
     return () => {
-      // Cleanup phase
-      gsap.ticker.remove(update); // Correctly removes the listener
+      gsap.ticker.remove(update);
       lenis.destroy();
     };
   }, []);
 
-  return <>{children}</>;
+  return (
+    // Optional: Add 'overflow-x-hidden' to prevent horizontal scrollbars appearing during load
+    <div className="w-full overflow-x-hidden">
+      {children}
+    </div>
+  );
 }
