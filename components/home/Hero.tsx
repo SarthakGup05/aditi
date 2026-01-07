@@ -114,7 +114,7 @@ export function Hero() {
             {/* Heading */}
             <h1 className="text-4xl sm:text-5xl font-medium leading-[1.1] tracking-tight md:text-[5.5rem] lg:text-[6.5rem] mb-6">
               Premium Car <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-200 via-white to-purple-200">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-500 via-white to-purple-200">
                 Rental Services
               </span>
             </h1>

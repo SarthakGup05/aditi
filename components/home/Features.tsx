@@ -8,7 +8,6 @@ import { ShieldCheck, Clock, MapPin, Headphones, ArrowRight, Sparkles } from "lu
 
 gsap.registerPlugin(ScrollTrigger);
 
-// Optimization: Define static data outside component to prevent re-allocation on re-renders
 const features = [
   {
     id: "01",
@@ -48,9 +47,35 @@ export function Features() {
     
     if (!container || !wrapper || !track) return;
 
-    const mm = gsap.matchMedia();
+    // --- 1. INTRO ANIMATION (Text Reveal + Slider Entry) ---
+    // This runs on both Mobile and Desktop when the section comes into view
+    const introTl = gsap.timeline({
+      scrollTrigger: {
+        trigger: container,
+        start: "top 70%", // Animation starts when top of section hits 70% of viewport
+        toggleActions: "play none none reverse",
+      }
+    });
 
-    // --- DESKTOP LOGIC (Pinned Horizontal Scroll) ---
+    introTl.from(".anim-text", {
+      y: 50,
+      opacity: 0,
+      duration: 1,
+      stagger: 0.15,
+      ease: "power3.out"
+    })
+    .from(wrapper, {
+      x: 100,      // Slider enters from right
+      opacity: 0,
+      duration: 1,
+      ease: "power2.out",
+      clearProps: "transform" // Critical: Clear transform so it doesn't conflict with pinning later
+    }, "-=0.5");
+
+
+    // --- 2. DESKTOP PINNING LOGIC (Horizontal Scroll) ---
+    const mm = gsap.matchMedia();
+    
     mm.add("(min-width: 768px)", () => {
       const getScrollAmount = () => track.scrollWidth - wrapper.offsetWidth;
       const scrollAmount = getScrollAmount();
@@ -58,12 +83,11 @@ export function Features() {
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: container,
-          start: "top top",
+          start: "top top", // Pinning starts when section hits top of screen
           end: () => `+=${scrollAmount}`,
           pin: true,
           scrub: 1,
           invalidateOnRefresh: true,
-          // Optimization: anticipatePin reduces flicker when pinning starts
           anticipatePin: 1, 
         },
       });
@@ -74,14 +98,10 @@ export function Features() {
         ease: "none" 
       });
 
-      // Subtle Parallax on elements (Desktop only where CPU is stronger)
+      // Subtle Parallax on elements
       tl.to(".parallax-icon", { x: 40, ease: "none" }, "<");
       tl.to(".giant-number", { x: 80, ease: "none" }, "<");
     });
-
-    // --- MOBILE LOGIC ---
-    // We intentionally DO NOT add GSAP scroll logic for mobile.
-    // Native CSS scrolling is faster, battery-efficient, and feels more natural on touch.
 
     return () => mm.revert();
   }, { scope: containerRef });
@@ -92,7 +112,6 @@ export function Features() {
       className="relative w-full bg-[#050505] text-white overflow-hidden"
     >
       {/* --- BACKGROUND DECOR --- */}
-      {/* Optimization: Reduced blur radius for mobile to save GPU */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-1/4 left-[-10%] w-[300px] md:w-[500px] h-[300px] md:h-[500px] bg-purple-900/10 rounded-full blur-[60px] md:blur-[120px]" />
         <div className="absolute bottom-0 right-[-10%] w-[300px] md:w-[600px] h-[300px] md:h-[600px] bg-blue-900/10 rounded-full blur-[60px] md:blur-[120px]" />
@@ -109,23 +128,23 @@ export function Features() {
           px-6 py-16 md:p-12 md:pl-16 
           z-20
         ">
-          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-purple-400 mb-6">
+          <div className="anim-text flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-purple-400 mb-6">
             <Sparkles size={12} /> Why Choose Aditi?
           </div>
           
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-medium leading-[1.1]">
+          <h2 className="anim-text text-4xl md:text-5xl lg:text-6xl font-medium leading-[1.1]">
             Elevating your <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-gray-500 via-gray-200 to-gray-500">
               commute experience
             </span>
           </h2>
           
-          <p className="mt-8 text-gray-400 max-w-sm text-sm leading-relaxed hidden md:block border-l border-purple-500/30 pl-4">
+          <p className="anim-text mt-8 text-gray-400 max-w-sm text-sm leading-relaxed hidden md:block border-l border-purple-500/30 pl-4">
             We don't just drive you; we care for you. Experience the difference with our premium fleet and verified chauffeurs.
           </p>
 
           {/* Mobile Swipe Indicator */}
-          <div className="flex md:hidden items-center gap-2 mt-8 text-xs font-medium text-purple-400 animate-pulse">
+          <div className="anim-text flex md:hidden items-center gap-2 mt-8 text-xs font-medium text-purple-400 animate-pulse">
             <span>Swipe to explore</span> <ArrowRight size={14} />
           </div>
         </div>
@@ -135,7 +154,6 @@ export function Features() {
           ref={sliderWrapperRef}
           className="w-full md:w-[65%] relative flex items-center overflow-hidden pb-12 md:pb-0"
         >
-          {/* Optimization: 'will-change-transform' promotes layer. 'touch-pan-x' improves swipe responsiveness */}
           <div
             ref={sliderTrackRef}
             className="
@@ -157,10 +175,7 @@ export function Features() {
                   transition-all duration-300 md:duration-500 
                   active:scale-[0.98] md:hover:border-purple-500/50 md:hover:bg-purple-900/10
                   
-                  /* Mobile: 85% width to show peek of next card - Proven UX pattern */
                   h-[360px] w-[85vw] p-6
-                  
-                  /* Desktop: Fixed size */
                   md:h-[500px] md:w-[380px] md:p-10
                 "
               >

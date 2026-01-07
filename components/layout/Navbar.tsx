@@ -47,7 +47,7 @@ export function Navbar() {
                     {/* --- LOGO --- */}
                     <Link href="/" className="flex items-center gap-2 z-50">
                         <span className="text-2xl font-bold tracking-tighter text-white">
-                            ADITI TOUR & TRAVELS<span className="text-purple-500">.</span>
+                        ADITI <span className="text-purple-400">TOUR & TRAVELS</span>
                         </span>
                     </Link>
 
