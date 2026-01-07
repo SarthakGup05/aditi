@@ -83,11 +83,14 @@ export function Testimonials() {
   }, { scope: containerRef });
 
   return (
-    <section ref={containerRef} className="relative w-full bg-[#050505] py-24 md:py-32 overflow-hidden text-white">
+    <section 
+      ref={containerRef} 
+      // FIXED: pb-10 removes the huge gap, z-20 keeps it above footer layers
+      className="relative w-full bg-[#050505] pt-24 pb-10 md:py-32 overflow-hidden text-white z-20"
+    >
       
       {/* --- BACKGROUND DECOR --- */}
       <div className="absolute inset-0 pointer-events-none">
-        {/* Reduced blur radius to prevent GPU overload */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] md:w-[800px] h-[400px] md:h-[800px] bg-purple-900/10 rounded-full blur-[60px]" />
         <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20" />
       </div>
@@ -128,10 +131,11 @@ export function Testimonials() {
         <div 
           ref={scrollContainerRef}
           className="
-            flex gap-6 overflow-x-auto pb-12 snap-x snap-mandatory 
+            flex gap-6 overflow-x-auto snap-x snap-mandatory 
             -mx-6 px-6 md:mx-0 md:px-0
             touch-pan-x will-change-transform
             [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]
+            pb-12
           "
         >
           {testimonials.map((t) => (
@@ -141,8 +145,6 @@ export function Testimonials() {
                 testimonial-card
                 relative shrink-0 snap-center
                 w-[85vw] md:w-[400px] 
-                
-                /* FIX: Replaced backdrop-blur with solid semi-transparent bg */
                 bg-[#111]/90 border border-white/10 
                 rounded-3xl p-8 md:p-10
                 flex flex-col justify-between
@@ -157,7 +159,6 @@ export function Testimonials() {
                     <Star key={i} size={16} className="fill-purple-500 text-purple-500" />
                   ))}
                 </div>
-                {/* Added drop-shadow to text to ensure readability if bg is transparent */}
                 <p className="text-lg md:text-xl text-gray-200 leading-relaxed font-light italic drop-shadow-md">
                   "{t.text}"
                 </p>
@@ -192,7 +193,6 @@ export function Testimonials() {
             </div>
           ))}
           
-          {/* Last CTA Card */}
           <div className="shrink-0 snap-center w-[85vw] md:w-[300px] flex items-center justify-center bg-purple-900/10 border border-purple-500/20 border-dashed rounded-3xl p-8 hover:bg-purple-900/20 transition-colors cursor-pointer group">
             <div className="text-center">
               <div className="h-16 w-16 bg-purple-500 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">

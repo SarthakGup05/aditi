@@ -1,75 +1,184 @@
 "use client";
 
-import { Facebook, Instagram, Twitter, MapPin, Phone, Mail, ArrowRight } from "lucide-react";
+import { useRef } from "react";
+import { 
+  Phone, 
+  MessageCircle, 
+  MapPin, 
+  Facebook, 
+  Instagram, 
+  Twitter, 
+  ArrowUpRight,
+  Mail
+} from "lucide-react";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
 
 export function Footer() {
+  const footerRef = useRef(null);
+
+  useGSAP(() => {
+    const el = footerRef.current;
+    
+    // Staggered fade-in animation for footer elements
+    gsap.fromTo(
+      ".footer-anim",
+      { y: 30, opacity: 0 },
+      {
+        y: 0,
+        opacity: 1,
+        duration: 0.8,
+        stagger: 0.1,
+        ease: "power2.out",
+        scrollTrigger: {
+          trigger: el,
+          start: "top 90%", // Starts animating when footer is just visible
+        },
+      }
+    );
+  }, { scope: footerRef });
+
   return (
-    <footer
-      // UPDATE: Changed bg-slate-950 to bg-[#050505]
-      className="fixed bottom-0 left-0 h-[500px] w-full bg-[#050505] text-gray-400 z-0 flex flex-col justify-center border-t border-white/10"
+    <footer 
+      ref={footerRef} 
+      className="relative w-full bg-[#020202] border-t border-white/5 text-white overflow-hidden pt-16 pb-10 -mt-10 z-30"
     >
-      <div className="mx-auto w-full max-w-7xl px-6">
-        <div className="grid grid-cols-1 gap-12 md:grid-cols-4">
+      
+      {/* --- BACKGROUND DECOR --- */}
+      <div className="absolute inset-0 pointer-events-none">
+        {/* Purple Glow at bottom left */}
+        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-purple-900/10 rounded-full blur-[120px]" />
+        {/* Noise Texture */}
+        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10" />
+      </div>
+
+      <div className="container mx-auto max-w-7xl px-6 relative z-10">
+        
+        {/* --- SECTION 1: INSTANT SUPPORT CARD --- */}
+        <div className="footer-anim flex flex-col md:flex-row items-center justify-between gap-8 bg-white/5 border border-white/10 rounded-3xl p-8 md:p-10 mb-16 backdrop-blur-sm hover:bg-white/[0.07] transition-colors">
+          <div className="text-center md:text-left">
+            <h3 className="text-2xl md:text-3xl font-medium mb-2">Need a ride instantly?</h3>
+            <p className="text-gray-400">Direct booking via WhatsApp or Phone. 24/7 Available.</p>
+          </div>
           
-          {/* Brand Column */}
-          <div className="space-y-4">
-            <span className="text-3xl font-bold tracking-tighter text-white"> ADITI TOUR & TRAVELS</span>
-            <p className="text-sm leading-relaxed">
-              Elevating the daily commute for IT professionals with comfort, safety, and style.
+          <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
+            {/* WhatsApp Button */}
+            <a 
+              href="https://wa.me/919999999999" // TODO: Add real number
+              target="_blank"
+              rel="noreferrer"
+              className="group flex-1 flex items-center justify-center gap-3 bg-[#25D366]/10 border border-[#25D366]/20 hover:bg-[#25D366]/20 text-[#25D366] px-8 py-4 rounded-xl transition-all active:scale-95"
+            >
+              <MessageCircle size={20} className="group-hover:scale-110 transition-transform" />
+              <span className="font-semibold">WhatsApp</span>
+            </a>
+
+            {/* Call Button */}
+            <a 
+              href="tel:+919999999999" // TODO: Add real number
+              className="group flex-1 flex items-center justify-center gap-3 bg-white text-black hover:bg-gray-200 px-8 py-4 rounded-xl transition-all active:scale-95"
+            >
+              <Phone size={20} className="group-hover:rotate-12 transition-transform" />
+              <span className="font-bold">Call Now</span>
+            </a>
+          </div>
+        </div>
+
+        {/* --- SECTION 2: LINKS GRID --- */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 border-b border-white/5 pb-12 mb-12">
+          
+          {/* Column 1: Brand Info */}
+          <div className="footer-anim md:col-span-1 space-y-6">
+            <span className="text-2xl font-bold tracking-tight">
+              ADITI <span className="text-purple-400">TOUR & TRAVELS</span>
+            </span>
+            <p className="text-sm text-gray-500 leading-relaxed">
+              Premium outstation taxi services specializing in Lucknow to Ayodhya, Varanasi, and Delhi NCR routes.
             </p>
-          </div>
-
-          {/* Quick Links */}
-          <div>
-            <h3 className="mb-6 text-sm font-bold text-white uppercase tracking-widest">Company</h3>
-            <ul className="space-y-3 text-sm">
-              <li><a href="#" className="hover:text-purple-400 transition-colors">About Us</a></li>
-              <li><a href="#" className="hover:text-purple-400 transition-colors">outstation taxi</a></li>
-              <li><a href="#" className="hover:text-purple-400 transition-colors">Contact</a></li>
-            </ul>
-          </div>
-
-          {/* Services */}
-          <div>
-            <h3 className="mb-6 text-sm font-bold text-white uppercase tracking-widest">Support</h3>
-            <ul className="space-y-3 text-sm">
-              <li><a href="#" className="hover:text-purple-400 transition-colors">Help Center</a></li>
-              <li><a href="#" className="hover:text-purple-400 transition-colors">Terms of Service</a></li>
-              <li><a href="#" className="hover:text-purple-400 transition-colors">Legal</a></li>
-              <li><a href="#" className="hover:text-purple-400 transition-colors">Privacy Policy</a></li>
-            </ul>
-          </div>
-
-          {/* Newsletter (Matches the Tapsi Vibe) */}
-          <div>
-            <h3 className="mb-6 text-sm font-bold text-white uppercase tracking-widest">Newsletter</h3>
-            <div className="flex flex-col gap-4">
-               <div className="flex items-center border-b border-white/20 pb-2">
-                 <input 
-                    type="email" 
-                    placeholder="Email address" 
-                    className="bg-transparent text-white placeholder:text-gray-600 focus:outline-none w-full text-sm"
-                 />
-                 <button className="text-purple-400 hover:text-white transition-colors">
-                    <ArrowRight size={16} />
-                 </button>
-               </div>
+            <div className="flex gap-4">
+              <SocialIcon Icon={Instagram} href="#" />
+              <SocialIcon Icon={Facebook} href="#" />
+              <SocialIcon Icon={Twitter} href="#" />
             </div>
           </div>
+
+          {/* Column 2: Quick Links */}
+          <div className="footer-anim">
+            <h4 className="font-bold text-white mb-6 uppercase tracking-wider text-xs">Company</h4>
+            <ul className="space-y-4 text-sm text-gray-400">
+              <FooterLink text="About Us" />
+              <FooterLink text="Our Fleet" />
+              <FooterLink text="Tariff Plans" />
+              <FooterLink text="Contact" />
+            </ul>
+          </div>
+
+          {/* Column 3: Legal/Support */}
+          <div className="footer-anim">
+            <h4 className="font-bold text-white mb-6 uppercase tracking-wider text-xs">Support</h4>
+            <ul className="space-y-4 text-sm text-gray-400">
+              <FooterLink text="Help Center" />
+              <FooterLink text="Terms of Service" />
+              <FooterLink text="Privacy Policy" />
+              <FooterLink text="Refund Policy" />
+            </ul>
+          </div>
+
+          {/* Column 4: Contact Info */}
+          <div className="footer-anim">
+            <h4 className="font-bold text-white mb-6 uppercase tracking-wider text-xs">Visit Us</h4>
+            <ul className="space-y-6 text-sm text-gray-400">
+              <li className="flex items-start gap-3">
+                <MapPin className="text-purple-500 shrink-0 mt-0.5" size={18} />
+                <span>
+                  Sector 12, Gomti Nagar,<br />
+                  Lucknow, Uttar Pradesh,<br />
+                  India 226010
+                </span>
+              </li>
+              <li className="flex items-center gap-3">
+                <Mail className="text-purple-500 shrink-0" size={18} />
+                <span>contact@adititravels.com</span>
+              </li>
+            </ul>
+          </div>
+
         </div>
 
-        {/* Bottom Bar */}
-        <div className="mt-16 flex flex-col items-center justify-between pt-8 md:flex-row border-t border-white/5">
-          <p className="text-xs text-gray-600">
-            © {new Date().getFullYear()} Tapsi Inc. All rights reserved.
-          </p>
-          <div className="mt-4 flex gap-6 md:mt-0">
-            <Facebook size={18} className="hover:text-purple-400 cursor-pointer transition-colors" />
-            <Instagram size={18} className="hover:text-purple-400 cursor-pointer transition-colors" />
-            <Twitter size={18} className="hover:text-purple-400 cursor-pointer transition-colors" />
-          </div>
+        {/* --- SECTION 3: COPYRIGHT --- */}
+        <div className="footer-anim flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-gray-600">
+          <p>© {new Date().getFullYear()} Aditi Tour & Travels. All rights reserved.</p>
+          <p>Designed for Luxury.</p>
         </div>
+
       </div>
     </footer>
+  );
+}
+
+// --- HELPER COMPONENTS (Types Removed) ---
+
+function SocialIcon({ Icon, href }) {
+  return (
+    <a 
+      href={href} 
+      className="h-10 w-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-purple-500 hover:border-purple-500 hover:text-white transition-all duration-300"
+    >
+      <Icon size={18} />
+    </a>
+  );
+}
+
+function FooterLink({ text }) {
+  return (
+    <li>
+      <a href="#" className="hover:text-purple-400 transition-colors flex items-center gap-2 group">
+        <ArrowUpRight size={12} className="opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all" />
+        {text}
+      </a>
+    </li>
   );
 }
