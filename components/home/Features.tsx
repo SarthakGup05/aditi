@@ -8,6 +8,7 @@ import { ShieldCheck, Clock, MapPin, Headphones, ArrowRight, Sparkles } from "lu
 
 gsap.registerPlugin(ScrollTrigger);
 
+// Optimization: Define static data outside component to prevent re-allocation on re-renders
 const features = [
   {
     id: "01",
@@ -49,6 +50,7 @@ export function Features() {
 
     const mm = gsap.matchMedia();
 
+    // --- DESKTOP LOGIC (Pinned Horizontal Scroll) ---
     mm.add("(min-width: 768px)", () => {
       const getScrollAmount = () => track.scrollWidth - wrapper.offsetWidth;
       const scrollAmount = getScrollAmount();
@@ -61,18 +63,25 @@ export function Features() {
           pin: true,
           scrub: 1,
           invalidateOnRefresh: true,
+          // Optimization: anticipatePin reduces flicker when pinning starts
+          anticipatePin: 1, 
         },
       });
 
       // Move track left
-      tl.to(track, { x: -scrollAmount, ease: "none" });
+      tl.to(track, { 
+        x: -scrollAmount, 
+        ease: "none" 
+      });
 
-      // Parallax Icon Effect
-      tl.to(".parallax-icon", { x: 60, ease: "none" }, "<");
-      
-      // Parallax Giant Numbers (Move slightly slower than card for depth)
-      tl.to(".giant-number", { x: 100, ease: "none" }, "<");
+      // Subtle Parallax on elements (Desktop only where CPU is stronger)
+      tl.to(".parallax-icon", { x: 40, ease: "none" }, "<");
+      tl.to(".giant-number", { x: 80, ease: "none" }, "<");
     });
+
+    // --- MOBILE LOGIC ---
+    // We intentionally DO NOT add GSAP scroll logic for mobile.
+    // Native CSS scrolling is faster, battery-efficient, and feels more natural on touch.
 
     return () => mm.revert();
   }, { scope: containerRef });
@@ -82,10 +91,11 @@ export function Features() {
       ref={containerRef}
       className="relative w-full bg-[#050505] text-white overflow-hidden"
     >
-      {/* --- BACKGROUND DECOR (Matching Hero) --- */}
+      {/* --- BACKGROUND DECOR --- */}
+      {/* Optimization: Reduced blur radius for mobile to save GPU */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/4 left-[-10%] w-[500px] h-[500px] bg-purple-900/10 rounded-full blur-[120px]" />
-        <div className="absolute bottom-0 right-[-10%] w-[600px] h-[600px] bg-blue-900/10 rounded-full blur-[120px]" />
+        <div className="absolute top-1/4 left-[-10%] w-[300px] md:w-[500px] h-[300px] md:h-[500px] bg-purple-900/10 rounded-full blur-[60px] md:blur-[120px]" />
+        <div className="absolute bottom-0 right-[-10%] w-[300px] md:w-[600px] h-[300px] md:h-[600px] bg-blue-900/10 rounded-full blur-[60px] md:blur-[120px]" />
         <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20" />
       </div>
 
@@ -125,9 +135,14 @@ export function Features() {
           ref={sliderWrapperRef}
           className="w-full md:w-[65%] relative flex items-center overflow-hidden pb-12 md:pb-0"
         >
+          {/* Optimization: 'will-change-transform' promotes layer. 'touch-pan-x' improves swipe responsiveness */}
           <div
             ref={sliderTrackRef}
-            className="flex gap-4 px-4 md:px-0 md:gap-12 w-max items-center overflow-x-auto snap-x snap-mandatory md:overflow-visible no-scrollbar"
+            className="
+              flex gap-4 px-4 md:px-0 md:gap-12 w-max items-center 
+              overflow-x-auto snap-x snap-mandatory md:overflow-visible no-scrollbar 
+              touch-pan-x will-change-transform
+            "
           >
             {/* Desktop Spacer */}
             <div className="hidden md:block w-12 shrink-0" />
@@ -139,23 +154,24 @@ export function Features() {
                   group relative flex flex-col justify-between overflow-hidden
                   shrink-0 snap-center 
                   rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl
-                  transition-all duration-500 hover:border-purple-500/50 hover:bg-purple-900/10 hover:shadow-[0_0_50px_rgba(168,85,247,0.1)]
+                  transition-all duration-300 md:duration-500 
+                  active:scale-[0.98] md:hover:border-purple-500/50 md:hover:bg-purple-900/10
                   
-                  /* Mobile: 85% width to show peek of next card */
+                  /* Mobile: 85% width to show peek of next card - Proven UX pattern */
                   h-[360px] w-[85vw] p-6
                   
                   /* Desktop: Fixed size */
                   md:h-[500px] md:w-[380px] md:p-10
                 "
               >
-                {/* GIANT BACKGROUND NUMBER (Decor) */}
+                {/* GIANT BACKGROUND NUMBER */}
                 <span className="giant-number absolute -right-4 -top-8 text-[10rem] font-bold text-white/5 select-none pointer-events-none transition-transform duration-700 group-hover:text-purple-500/10">
                   {f.id}
                 </span>
 
                 {/* Top: Icon */}
                 <div className="relative z-10 flex justify-between items-start">
-                  <div className="parallax-icon flex h-14 w-14 items-center justify-center rounded-2xl bg-white/5 border border-white/10 text-purple-300 transition-all duration-300 group-hover:bg-purple-500 group-hover:text-white group-hover:scale-110 shadow-lg">
+                  <div className="parallax-icon flex h-14 w-14 items-center justify-center rounded-2xl bg-white/5 border border-white/10 text-purple-300 transition-transform duration-300 md:group-hover:bg-purple-500 md:group-hover:text-white md:group-hover:scale-110 shadow-lg">
                     {f.icon}
                   </div>
                 </div>
