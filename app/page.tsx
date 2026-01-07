@@ -11,10 +11,8 @@ export default function Home() {
     <>
       <Hero />
       <Features />
-      <PopularRoutes/>
-      <Fleet /> {/* Added Fleet Section here for visual contrast (Dark bg) */}
-      {/* Route Placeholder (Day 2) */}
-      <Testimonials />
+      {/* <PopularRoutes/>
+      <Fleet /> */}
       
     </>
   );
