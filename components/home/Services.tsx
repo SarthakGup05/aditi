@@ -227,7 +227,7 @@ export function PopularRoutes() {
           
           {/* Mobile View All Link */}
           <div className="anim-card md:hidden shrink-0 snap-center w-[150px] flex items-center justify-center">
-            <Link href="/routes" className="flex flex-col items-center gap-3 text-gray-400 group">
+            <Link href="/routes/lucknow-to-delhi-ncr" className="flex flex-col items-center gap-3 text-gray-400 group">
               <div className="h-14 w-14 rounded-full border border-white/10 flex items-center justify-center bg-white/5 group-active:scale-95 transition-transform"><ArrowRight size={24} /></div>
               <span className="text-sm font-medium">View All Routes</span>
             </Link>
