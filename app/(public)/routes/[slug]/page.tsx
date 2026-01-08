@@ -1,11 +1,10 @@
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { 
-  MapPin, Clock, ShieldCheck, CheckCircle2, 
+import {
+  MapPin, Clock, ShieldCheck, CheckCircle2,
   Car, Phone, MessageCircle, Star, Info
 } from "lucide-react";
 import { Navbar } from "@/components/layout/Navbar";
-import { Footer } from "@/components/layout/Footer";
 // ❌ REMOVED: import db from "@/lib/db"; (We fetch from API now)
 import type { Metadata } from "next";
 
@@ -33,14 +32,14 @@ async function getRouteBySlug(slug: string) {
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const route = await getRouteBySlug(slug);
-  
+
   if (!route) return { title: "Route Not Found | Aditi Tour & Travels" };
 
   return {
     title: route.metaTitle || `${route.title} Taxi Service | Aditi Tour & Travels`,
     description: route.metaDescription || `Book premium taxi for ${route.title}. Starting at ₹${route.basePrice}.`,
     alternates: {
-        canonical: route.canonicalUrl || `https://adititravels.com/routes/${slug}`
+      canonical: route.canonicalUrl || `https://adititravels.com/routes/${slug}`
     }
   };
 }
@@ -50,7 +49,7 @@ export default async function RouteDetailPage({ params }: { params: Promise<{ sl
   const { slug } = await params;
   const route = await getRouteBySlug(slug);
 
-  if (!route) notFound(); 
+  if (!route) notFound();
 
   // JSON-LD Schema for Google
   const jsonLd = {
@@ -67,8 +66,8 @@ export default async function RouteDetailPage({ params }: { params: Promise<{ sl
   };
 
   // Safe check for highlights (API returns JSON, so it might already be an array)
-  const highlights = Array.isArray(route.highlights) 
-    ? route.highlights 
+  const highlights = Array.isArray(route.highlights)
+    ? route.highlights
     : [];
 
   return (
@@ -80,7 +79,7 @@ export default async function RouteDetailPage({ params }: { params: Promise<{ sl
       <section className="relative h-[80vh] w-full flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0">
           <Image
-            src={route.heroImage} 
+            src={route.heroImage}
             alt={`${route.title} Taxi Route`}
             fill
             className="object-cover"
@@ -88,15 +87,15 @@ export default async function RouteDetailPage({ params }: { params: Promise<{ sl
           />
           <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/40 to-[#050505]" />
         </div>
-        
-         <div className="relative z-10 container mx-auto px-6 text-center mt-10">
-           <h1 className="text-4xl md:text-7xl font-bold tracking-tight mb-6 drop-shadow-2xl">
-             {route.title}
-           </h1>
-           <p className="text-lg md:text-xl text-gray-200 max-w-2xl mx-auto mb-10 leading-relaxed font-light">
-             {route.tagline}
-           </p>
-         </div>
+
+        <div className="relative z-10 container mx-auto px-6 text-center mt-10">
+          <h1 className="text-4xl md:text-7xl font-bold tracking-tight mb-6 drop-shadow-2xl">
+            {route.title}
+          </h1>
+          <p className="text-lg md:text-xl text-gray-200 max-w-2xl mx-auto mb-10 leading-relaxed font-light">
+            {route.tagline}
+          </p>
+        </div>
 
         {/* Floating Stats Strip */}
         <div className="absolute bottom-8 left-0 w-full z-20">
@@ -113,24 +112,24 @@ export default async function RouteDetailPage({ params }: { params: Promise<{ sl
 
       {/* --- CONTENT LAYOUT --- */}
       <div className="container mx-auto max-w-7xl px-6 py-24 flex flex-col lg:flex-row gap-16 relative z-10">
-        
+
         <div className="w-full lg:w-2/3 space-y-20">
           {/* Highlights */}
           <article className="space-y-8">
-             <div>
-               <h2 className="text-3xl font-bold mb-4 flex items-center gap-3">
-                 <Info className="text-purple-500" /> About the Journey
-               </h2>
-               <p className="text-gray-400 leading-relaxed text-lg">{route.description}</p>
-             </div>
-             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-               {highlights.map((item: string, i: number) => (
-                 <div key={i} className="flex items-center gap-4 p-5 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors">
-                   <CheckCircle2 size={20} className="text-purple-400" />
-                   <span className="font-medium text-gray-200">{item}</span>
-                 </div>
-               ))}
-             </div>
+            <div>
+              <h2 className="text-3xl font-bold mb-4 flex items-center gap-3">
+                <Info className="text-purple-500" /> About the Journey
+              </h2>
+              <p className="text-gray-400 leading-relaxed text-lg">{route.description}</p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {highlights.map((item: string, i: number) => (
+                <div key={i} className="flex items-center gap-4 p-5 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors">
+                  <CheckCircle2 size={20} className="text-purple-400" />
+                  <span className="font-medium text-gray-200">{item}</span>
+                </div>
+              ))}
+            </div>
           </article>
 
           {/* Gallery - Dynamic from API */}
@@ -146,7 +145,7 @@ export default async function RouteDetailPage({ params }: { params: Promise<{ sl
                 <div className="flex flex-col gap-4 h-full">
                   {route.gallery.slice(1, 3).map((img: any, i: number) => (
                     <div key={i} className="relative flex-1 rounded-3xl overflow-hidden">
-                       <Image src={img.imageUrl} alt="Sight" fill className="object-cover" />
+                      <Image src={img.imageUrl} alt="Sight" fill className="object-cover" />
                     </div>
                   ))}
                 </div>
@@ -156,49 +155,49 @@ export default async function RouteDetailPage({ params }: { params: Promise<{ sl
 
           {/* Pricing Cards - Dynamic from API */}
           <section id="fleet" className="space-y-8 pt-8 border-t border-white/10">
-              <h2 className="text-3xl font-bold">Choose Your Comfort</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {route.packages?.map((plan: any) => (
-                  <div key={plan.id} className="group relative overflow-hidden rounded-3xl border border-white/10 bg-[#111]">
-                    <div className="relative h-48 w-full">
-                       <Image src={plan.image} alt={plan.carModel} fill className="object-cover" />
-                       <div className="absolute top-4 left-4 px-3 py-1 rounded-full bg-black/50 backdrop-blur-md text-xs font-bold text-white border border-white/10">
-                         {plan.category}
-                       </div>
-                    </div>
-                    <div className="p-6">
-                      <h3 className="text-xl font-bold text-white">{plan.carModel}</h3>
-                      <div className="flex gap-3 text-xs text-gray-500 mt-1">
-                        <span>{plan.seats} Seats</span> • <span>{plan.bags} Bags</span>
-                      </div>
-                      <div className="mt-4 flex justify-between items-center">
-                         <span className="text-2xl font-bold text-purple-400">₹{plan.price}</span>
-                         <button className="px-4 py-2 bg-white text-black font-bold rounded-lg text-sm">Book</button>
-                      </div>
+            <h2 className="text-3xl font-bold">Choose Your Comfort</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {route.packages?.map((plan: any) => (
+                <div key={plan.id} className="group relative overflow-hidden rounded-3xl border border-white/10 bg-[#111]">
+                  <div className="relative h-48 w-full">
+                    <Image src={plan.image} alt={plan.carModel} fill className="object-cover" />
+                    <div className="absolute top-4 left-4 px-3 py-1 rounded-full bg-black/50 backdrop-blur-md text-xs font-bold text-white border border-white/10">
+                      {plan.category}
                     </div>
                   </div>
-                ))}
-              </div>
+                  <div className="p-6">
+                    <h3 className="text-xl font-bold text-white">{plan.carModel}</h3>
+                    <div className="flex gap-3 text-xs text-gray-500 mt-1">
+                      <span>{plan.seats} Seats</span> • <span>{plan.bags} Bags</span>
+                    </div>
+                    <div className="mt-4 flex justify-between items-center">
+                      <span className="text-2xl font-bold text-purple-400">₹{plan.price}</span>
+                      <button className="px-4 py-2 bg-white text-black font-bold rounded-lg text-sm">Book</button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
           </section>
         </div>
 
         {/* Right Sidebar */}
         <aside className="w-full lg:w-1/3">
-            {/* Keeping the sidebar space ready for booking component */}
-            <div className="sticky top-24 p-6 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm">
-                <h3 className="text-xl font-bold mb-4">Book This Ride</h3>
-                <p className="text-gray-400 text-sm mb-6">Call us to confirm availability instantly.</p>
-                <button className="w-full py-3 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-xl mb-3 flex items-center justify-center gap-2">
-                    <Phone size={18} /> Call Now
-                </button>
-                <button className="w-full py-3 bg-green-600 hover:bg-green-500 text-white font-bold rounded-xl flex items-center justify-center gap-2">
-                    <MessageCircle size={18} /> WhatsApp
-                </button>
-            </div>
+          {/* Keeping the sidebar space ready for booking component */}
+          <div className="sticky top-24 p-6 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm">
+            <h3 className="text-xl font-bold mb-4">Book This Ride</h3>
+            <p className="text-gray-400 text-sm mb-6">Call us to confirm availability instantly.</p>
+            <button className="w-full py-3 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-xl mb-3 flex items-center justify-center gap-2">
+              <Phone size={18} /> Call Now
+            </button>
+            <button className="w-full py-3 bg-green-600 hover:bg-green-500 text-white font-bold rounded-xl flex items-center justify-center gap-2">
+              <MessageCircle size={18} /> WhatsApp
+            </button>
+          </div>
         </aside>
 
       </div>
-      <Footer />
+
     </main>
   );
 }

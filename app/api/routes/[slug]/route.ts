@@ -1,7 +1,7 @@
 import { RouteController } from "@/lib/controllers/route.controller";
 import { NextRequest } from "next/server";
 
-// GET /api/routes/:slug -> Get One
+// GET /api/routes/:slug -> Read One
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
@@ -10,7 +10,7 @@ export async function GET(
   return RouteController.getBySlug(slug);
 }
 
-// PATCH /api/routes/:slug -> Update One
+// PATCH /api/routes/:slug -> Update (Edit)
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
@@ -19,7 +19,7 @@ export async function PATCH(
   return RouteController.update(slug, request);
 }
 
-// DELETE /api/routes/:slug -> Delete One
+// DELETE /api/routes/:slug -> Remove
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
