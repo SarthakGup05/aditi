@@ -3,77 +3,72 @@
 import { useRef, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { MapPin, ArrowRight, Clock, Navigation, ArrowLeft, PauseCircle, PlayCircle } from "lucide-react";
+import { MapPin, ArrowRight, Clock, Navigation, ArrowLeft, PauseCircle, PlayCircle, Loader2 } from "lucide-react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const routes = [
-  {
-    id: "delhi",
-    destination: "Delhi NCR",
-    image: "https://images.unsplash.com/photo-1587474260584-136574528ed5?q=80&w=1000&auto=format&fit=crop", 
-    distance: "550 km",
-    duration: "8-9 Hrs",
-    price: "₹11/km",
-    tag: "Business"
-  },
-  {
-    id: "agra",
-    destination: "Agra & Mathura",
-    image: "https://images.unsplash.com/photo-1564507592333-c60657eea523?q=80&w=1000&auto=format&fit=crop",
-    distance: "335 km",
-    duration: "4-5 Hrs",
-    price: "₹12/km",
-    tag: "Popular"
-  },
-  {
-    id: "ayodhya",
-    destination: "Ayodhya Dham",
-    image: "https://images.unsplash.com/photo-1706173059858-5d15a510526e?q=80&w=1000&auto=format&fit=crop",
-    distance: "135 km",
-    duration: "2.5 Hrs",
-    price: "₹13/km",
-    tag: "Devotional"
-  },
-  {
-    id: "varanasi",
-    destination: "Varanasi (Kashi)",
-    image: "https://images.unsplash.com/photo-1561361513-2d000a50f0dc?q=80&w=1000&auto=format&fit=crop",
-    distance: "310 km",
-    duration: "5-6 Hrs",
-    price: "₹12/km",
-    tag: "Spiritual"
-  },
-  {
-    id: "prayagraj",
-    destination: "Prayagraj",
-    image: "https://images.unsplash.com/photo-1619446485856-11f26487df34?q=80&w=1000&auto=format&fit=crop",
-    distance: "200 km",
-    duration: "4 Hrs",
-    price: "₹11/km",
-    tag: "Pilgrimage"
-  },
-];
+// Define the API Data Shape
+type RouteAPI = {
+  id: number;
+  slug: string;
+  title: string;
+  heroImage: string;
+  distance: string;
+  duration: string;
+  basePrice: number;
+};
+
+// Helper to assign tags based on keywords (Optional visual flair)
+const getTag = (title: string) => {
+  if (title.includes("Ayodhya") || title.includes("Varanasi") || title.includes("Prayagraj")) return "Spiritual";
+  if (title.includes("Delhi") || title.includes("Airport")) return "Business";
+  if (title.includes("Agra") || title.includes("Jaipur")) return "Heritage";
+  return "Popular";
+};
 
 export function PopularRoutes() {
   const containerRef = useRef<HTMLElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [isPaused, setIsPaused] = useState(false);
+  
+  // State for API Data
+  const [routes, setRoutes] = useState<RouteAPI[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // --- ANIMATION LOGIC ---
+  // --- 1. FETCH DATA ---
+  useEffect(() => {
+    async function fetchRoutes() {
+      try {
+        const res = await fetch('/api/routes');
+        const data = await res.json();
+        if (Array.isArray(data)) {
+          setRoutes(data);
+        }
+      } catch (error) {
+        console.error("Failed to load routes:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchRoutes();
+  }, []);
+
+  // --- 2. ANIMATION LOGIC (Runs only after loading) ---
   useGSAP(() => {
+    if (loading || routes.length === 0) return;
+
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: containerRef.current,
-        start: "top 70%", // Animation starts when top of section hits 70% of viewport
+        start: "top 70%",
         toggleActions: "play none none reverse",
       }
     });
 
-    // 1. Text Reveal (Label -> Heading -> Buttons)
+    // Text Reveal
     tl.from(".anim-text", {
       y: 50,
       opacity: 0,
@@ -82,17 +77,17 @@ export function PopularRoutes() {
       ease: "power3.out"
     })
     
-    // 2. Cards Cascade (starts slightly before text finishes)
+    // Cards Cascade
     .from(".anim-card", {
-      x: 100,      // Slide in from right
+      x: 100,
       opacity: 0,
       duration: 0.8,
-      stagger: 0.1, // Each card delays by 0.1s
+      stagger: 0.1,
       ease: "power2.out",
-      clearProps: "all" // Important: removes styles after animation so hover effects work perfectly
+      clearProps: "all"
     }, "-=0.5");
 
-  }, { scope: containerRef });
+  }, { scope: containerRef, dependencies: [loading, routes] });
 
   // --- Navigation Logic ---
   const scroll = (direction: "left" | "right") => {
@@ -108,7 +103,7 @@ export function PopularRoutes() {
 
   // --- Auto-Play Logic ---
   useEffect(() => {
-    if (isPaused) return;
+    if (isPaused || loading) return;
     const interval = setInterval(() => {
       if (scrollContainerRef.current) {
         const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
@@ -120,9 +115,18 @@ export function PopularRoutes() {
       }
     }, 3000);
     return () => clearInterval(interval);
-  }, [isPaused]);
+  }, [isPaused, loading]);
 
+  // --- LOADING STATE ---
+  if (loading) {
+    return (
+      <section className="w-full bg-[#050505] py-24 flex justify-center">
+        <Loader2 className="animate-spin text-purple-500" size={32} />
+      </section>
+    );
+  }
 
+  // --- MAIN RENDER ---
   return (
     <section ref={containerRef} className="w-full bg-[#050505] py-16 md:py-24 overflow-hidden">
       <div className="container mx-auto max-w-7xl px-4 md:px-6">
@@ -168,9 +172,9 @@ export function PopularRoutes() {
           {routes.map((route) => (
             <Link 
               key={route.id}
-              href={`/routes/lucknow-to-${route.id}`}
+              href={`/routes/${route.slug}`}
               className="
-                anim-card /* GSAP Target Class */
+                anim-card 
                 group relative shrink-0 snap-center 
                 w-[280px] md:w-[320px] h-[380px] md:h-[420px] 
                 rounded-3xl overflow-hidden 
@@ -182,8 +186,8 @@ export function PopularRoutes() {
               {/* Background Image */}
               <div className="absolute inset-0 w-full h-full">
                 <Image
-                  src={route.image}
-                  alt={`Taxi to ${route.destination}`}
+                  src={route.heroImage}
+                  alt={route.title}
                   fill
                   className="object-cover transition-transform duration-700 group-hover:scale-110"
                   sizes="(max-width: 768px) 600px, 800px"
@@ -194,7 +198,7 @@ export function PopularRoutes() {
               {/* Top Tag */}
               <div className="absolute top-4 right-4 z-10">
                 <span className="px-3 py-1 rounded-full bg-black/70 border border-white/10 text-[10px] font-bold uppercase tracking-wider text-white">
-                  {route.tag}
+                  {getTag(route.title)}
                 </span>
               </div>
 
@@ -205,17 +209,20 @@ export function PopularRoutes() {
                   <div className="h-[1px] w-8 bg-purple-500" />
                   <MapPin size={12} className="text-purple-400" />
                 </div>
+                
                 <h3 className="text-2xl font-bold text-white leading-tight group-hover:text-purple-200 transition-colors">
-                  {route.destination}
+                  {route.title}
                 </h3>
+                
                 <div className="flex items-center gap-4 text-xs text-gray-300 mt-1 border-t border-white/10 pt-3">
                   <div className="flex items-center gap-1.5"><Navigation size={12} className="text-purple-400" />{route.distance}</div>
                   <div className="flex items-center gap-1.5"><Clock size={12} className="text-purple-400" />{route.duration}</div>
                 </div>
+                
                 <div className="flex items-center justify-between mt-2">
                   <div className="flex flex-col">
                     <span className="text-[10px] text-gray-400 uppercase font-bold">Starts From</span>
-                    <span className="text-lg font-bold text-white">{route.price}</span>
+                    <span className="text-lg font-bold text-white">₹{route.basePrice.toLocaleString()}</span>
                   </div>
                   <div className="h-10 w-10 rounded-full bg-white text-black flex items-center justify-center transform transition-transform duration-300 group-hover:bg-purple-500 group-hover:text-white group-hover:rotate-[-45deg]">
                     <ArrowRight size={18} />
@@ -227,7 +234,7 @@ export function PopularRoutes() {
           
           {/* Mobile View All Link */}
           <div className="anim-card md:hidden shrink-0 snap-center w-[150px] flex items-center justify-center">
-            <Link href="/routes/lucknow-to-delhi-ncr" className="flex flex-col items-center gap-3 text-gray-400 group">
+            <Link href="/routes" className="flex flex-col items-center gap-3 text-gray-400 group">
               <div className="h-14 w-14 rounded-full border border-white/10 flex items-center justify-center bg-white/5 group-active:scale-95 transition-transform"><ArrowRight size={24} /></div>
               <span className="text-sm font-medium">View All Routes</span>
             </Link>

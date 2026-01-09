@@ -10,6 +10,11 @@ const nextConfig = {
         protocol: "https",
         hostname: "purepng.com",
       },
+
+      {
+        protocol: "https",
+        hostname: "i.pinimg.com",
+      },
       
     ],
   },

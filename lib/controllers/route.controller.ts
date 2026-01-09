@@ -1,107 +1,121 @@
-import { NextResponse } from "next/server";
-import db from "@/lib/db";
+import  prisma  from "@/lib/db";
+import { NextRequest, NextResponse } from "next/server";
 
-export const RouteController = {
-  // --- CREATE (POST) ---
-  create: async (req: Request) => {
+export class RouteController {
+  
+  // GET ALL
+  static async getAll(req: NextRequest) {
+    try {
+      const { searchParams } = new URL(req.url);
+      const isAdmin = searchParams.get("admin") === "true";
+
+      const whereClause = isAdmin ? {} : { isActive: true };
+
+      const routes = await prisma.serviceRoute.findMany({
+        where: whereClause,
+        orderBy: { createdAt: 'desc' },
+        include: { 
+          gallery: true, 
+          // ❌ REMOVED: packages: true (This caused the crash)
+        } 
+      });
+
+      return NextResponse.json(routes);
+    } catch (error) {
+      console.error("🔥 GET_ALL Error:", error); // <--- Log the real error
+      return NextResponse.json({ error: "Failed to fetch routes" }, { status: 500 });
+    }
+  }
+
+  // GET BY SLUG (This was crashing your page)
+  static async getBySlug(slug: string) {
+    try {
+      console.log(`🔎 Searching for slug: ${slug}`); // Debug log
+
+      const route = await prisma.serviceRoute.findUnique({
+        where: { slug },
+        include: { 
+          gallery: true,
+          // ❌ REMOVED: packages: true (CRITICAL FIX)
+        }
+      });
+      
+      if (!route) {
+        console.error(`❌ Route not found for slug: ${slug}`);
+        return NextResponse.json({ error: "Not found" }, { status: 404 });
+      }
+      
+      return NextResponse.json(route);
+    } catch (error) {
+      console.error("🔥 GET_BY_SLUG Error:", error); // <--- Log the real error
+      return NextResponse.json({ error: "Fetch failed" }, { status: 500 });
+    }
+  }
+
+  // CREATE
+  static async create(req: NextRequest) {
     try {
       const body = await req.json();
-
-      // 1. Basic Validation
-      if (!body.slug || !body.title || !body.basePrice) {
-        return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
-      }
-
-      // 2. Check duplicate slug
-      const existing = await db.serviceRoute.findUnique({ where: { slug: body.slug } });
-      if (existing) {
-        return NextResponse.json({ error: "Slug already exists" }, { status: 409 });
-      }
-
-      // 3. Create in DB
-      const newRoute = await db.serviceRoute.create({
+      
+      const newRoute = await prisma.serviceRoute.create({
         data: {
-            ...body,
-            // Ensure relations are formatted correctly for Prisma
-            gallery: body.gallery ? { create: body.gallery } : undefined,
-            packages: body.packages ? { create: body.packages } : undefined,
+          title: body.title,
+          slug: body.slug,
+          tagline: body.tagline,
+          heroImage: body.heroImage,
+          distance: body.distance,
+          duration: body.duration,
+          basePrice: Number(body.basePrice),
+          description: body.description,
+          isActive: body.isActive,
+          highlights: body.highlights || [],
         }
       });
 
       return NextResponse.json(newRoute, { status: 201 });
     } catch (error) {
-      console.error("CREATE Error:", error);
-      return NextResponse.json({ error: "Failed to create route" }, { status: 500 });
+      console.error("🔥 CREATE Error:", error);
+      return NextResponse.json({ error: "Creation failed" }, { status: 500 });
     }
-  },
+  }
 
-  // --- READ ALL (GET) ---
-  // ✅ FIX: Accepts 'isAdmin' to decide if we show Drafts or not
-  getAll: async (isAdmin: boolean = false) => {
-    try {
-      // If Admin, no filter (show all). If Public, filter by isActive: true.
-      const whereClause = isAdmin ? {} : { isActive: true };
-
-      const routes = await db.serviceRoute.findMany({
-        where: whereClause,
-        orderBy: { createdAt: 'desc' },
-        include: { packages: true } // Fetch minimal data for list view
-      });
-      return NextResponse.json(routes, { status: 200 });
-    } catch (error) {
-      console.error("GET_ALL Error:", error);
-      return NextResponse.json({ error: "Failed to fetch routes" }, { status: 500 });
-    }
-  },
-
-  // --- READ ONE (GET) ---
-  getBySlug: async (slug: string) => {
-    try {
-      // We use findFirst to allow flexible filtering if needed
-      const route = await db.serviceRoute.findUnique({
-        where: { slug },
-        include: { gallery: true, packages: true } 
-      });
-
-      if (!route) return NextResponse.json({ error: "Route not found" }, { status: 404 });
-
-      return NextResponse.json(route, { status: 200 });
-    } catch (error) {
-      console.error("GET_ONE Error:", error);
-      return NextResponse.json({ error: "Server Error" }, { status: 500 });
-    }
-  },
-
-  // --- UPDATE (PATCH) ---
-  update: async (slug: string, req: Request) => {
+  // UPDATE
+  static async update(slug: string, req: NextRequest) {
     try {
       const body = await req.json();
 
-      // Check existence
-      const existing = await db.serviceRoute.findUnique({ where: { slug } });
-      if (!existing) return NextResponse.json({ error: "Route not found" }, { status: 404 });
-
-      const updatedRoute = await db.serviceRoute.update({
+      const updatedRoute = await prisma.serviceRoute.update({
         where: { slug },
-        data: body,
+        data: {
+          title: body.title,
+          tagline: body.tagline,
+          heroImage: body.heroImage,
+          distance: body.distance,
+          duration: body.duration,
+          basePrice: Number(body.basePrice),
+          description: body.description,
+          isActive: body.isActive,
+          highlights: body.highlights,
+        }
       });
 
-      return NextResponse.json(updatedRoute, { status: 200 });
+      return NextResponse.json(updatedRoute);
     } catch (error) {
-      console.error("UPDATE Error:", error);
+      console.error("🔥 UPDATE Error:", error);
       return NextResponse.json({ error: "Update failed" }, { status: 500 });
     }
-  },
+  }
 
-  // --- DELETE (DELETE) ---
-  delete: async (slug: string) => {
+  // DELETE
+  static async delete(slug: string) {
     try {
-        await db.serviceRoute.delete({
-            where: { slug }
-        });
-        return NextResponse.json({ message: "Route deleted successfully" }, { status: 200 });
+      await prisma.serviceRoute.delete({
+        where: { slug }
+      });
+      return NextResponse.json({ success: true });
     } catch (error) {
-        return NextResponse.json({ error: "Route not found" }, { status: 404 });
+      console.error("🔥 DELETE Error:", error);
+      return NextResponse.json({ error: "Delete failed" }, { status: 500 });
     }
   }
-};
+}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef } from "react";
+import Link from "next/link"; // ✅ Added for smoother navigation
 import { 
   Phone, 
   MessageCircle, 
@@ -9,7 +10,9 @@ import {
   Instagram, 
   Twitter, 
   ArrowUpRight,
-  Mail
+  Mail,
+  FileText,
+  LucideIcon 
 } from "lucide-react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
@@ -18,12 +21,11 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 gsap.registerPlugin(ScrollTrigger);
 
 export function Footer() {
-  const footerRef = useRef(null);
+  const footerRef = useRef<HTMLElement>(null);
 
   useGSAP(() => {
     const el = footerRef.current;
     
-    // Staggered fade-in animation for footer elements
     gsap.fromTo(
       ".footer-anim",
       { y: 30, opacity: 0 },
@@ -35,7 +37,7 @@ export function Footer() {
         ease: "power2.out",
         scrollTrigger: {
           trigger: el,
-          start: "top 90%", // Starts animating when footer is just visible
+          start: "top 90%", 
         },
       }
     );
@@ -46,12 +48,9 @@ export function Footer() {
       ref={footerRef} 
       className="relative w-full bg-[#020202] border-t border-white/5 text-white overflow-hidden pt-16 pb-10 -mt-10 z-30"
     >
-      
       {/* --- BACKGROUND DECOR --- */}
       <div className="absolute inset-0 pointer-events-none">
-        {/* Purple Glow at bottom left */}
         <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-purple-900/10 rounded-full blur-[120px]" />
-        {/* Noise Texture */}
         <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10" />
       </div>
 
@@ -65,9 +64,9 @@ export function Footer() {
           </div>
           
           <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
-            {/* WhatsApp Button */}
+            {/* WhatsApp */}
             <a 
-              href="https://wa.me/919999999999" // TODO: Add real number
+              href="https://wa.me/919999999999" 
               target="_blank"
               rel="noreferrer"
               className="group flex-1 flex items-center justify-center gap-3 bg-[#25D366]/10 border border-[#25D366]/20 hover:bg-[#25D366]/20 text-[#25D366] px-8 py-4 rounded-xl transition-all active:scale-95"
@@ -76,9 +75,9 @@ export function Footer() {
               <span className="font-semibold">WhatsApp</span>
             </a>
 
-            {/* Call Button */}
+            {/* Phone */}
             <a 
-              href="tel:+919999999999" // TODO: Add real number
+              href="tel:+919999999999" 
               className="group flex-1 flex items-center justify-center gap-3 bg-white text-black hover:bg-gray-200 px-8 py-4 rounded-xl transition-all active:scale-95"
             >
               <Phone size={20} className="group-hover:rotate-12 transition-transform" />
@@ -88,46 +87,41 @@ export function Footer() {
         </div>
 
         {/* --- SECTION 2: LINKS GRID --- */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 border-b border-white/5 pb-12 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 border-b border-white/5 pb-12 mb-12">
           
-          {/* Column 1: Brand Info */}
-          <div className="footer-anim md:col-span-1 space-y-6">
+          {/* Column 1: Brand Info & GSTIN */}
+          <div className="footer-anim space-y-6">
             <span className="text-2xl font-bold tracking-tight">
               ADITI <span className="text-purple-400">TOUR & TRAVELS</span>
             </span>
-            <p className="text-sm text-gray-500 leading-relaxed">
+            <p className="text-sm text-gray-500 leading-relaxed max-w-sm">
               Premium outstation taxi services specializing in Lucknow to Ayodhya, Varanasi, and Delhi NCR routes.
             </p>
-            <div className="flex gap-4">
+            
+            {/* GSTIN Badge */}
+            <div className="flex items-center gap-2 text-xs text-gray-400 border border-white/10 bg-white/5 p-2 rounded-lg w-fit">
+               <FileText size={14} className="text-purple-400" />
+               <span className="font-mono tracking-wide">GSTIN: 09AMMPY0323J1ZN</span>
+            </div>
+
+            <div className="flex gap-4 pt-2">
               <SocialIcon Icon={Instagram} href="#" />
               <SocialIcon Icon={Facebook} href="#" />
               <SocialIcon Icon={Twitter} href="#" />
             </div>
           </div>
 
-          {/* Column 2: Quick Links */}
-          <div className="footer-anim">
-            <h4 className="font-bold text-white mb-6 uppercase tracking-wider text-xs">Company</h4>
+          {/* Column 2: Quick Links (Updated) */}
+          <div className="footer-anim md:pl-10">
+            <h4 className="font-bold text-white mb-6 uppercase tracking-wider text-xs">Quick Links</h4>
             <ul className="space-y-4 text-sm text-gray-400">
-              <FooterLink text="About Us" />
-              <FooterLink text="Our Fleet" />
-              <FooterLink text="Tariff Plans" />
-              <FooterLink text="Contact" />
+              <FooterLink text="Home" href="/" />
+              <FooterLink text="About" href="/about" />
+              <FooterLink text="Contact" href="/contact" />
             </ul>
           </div>
 
-          {/* Column 3: Legal/Support */}
-          <div className="footer-anim">
-            <h4 className="font-bold text-white mb-6 uppercase tracking-wider text-xs">Support</h4>
-            <ul className="space-y-4 text-sm text-gray-400">
-              <FooterLink text="Help Center" />
-              <FooterLink text="Terms of Service" />
-              <FooterLink text="Privacy Policy" />
-              <FooterLink text="Refund Policy" />
-            </ul>
-          </div>
-
-          {/* Column 4: Contact Info */}
+          {/* Column 3: Contact Info */}
           <div className="footer-anim">
             <h4 className="font-bold text-white mb-6 uppercase tracking-wider text-xs">Visit Us</h4>
             <ul className="space-y-6 text-sm text-gray-400">
@@ -159,9 +153,14 @@ export function Footer() {
   );
 }
 
-// --- HELPER COMPONENTS (Types Removed) ---
+// --- HELPER COMPONENTS ---
 
-function SocialIcon({ Icon, href }) {
+interface SocialIconProps {
+  Icon: LucideIcon;
+  href: string;
+}
+
+function SocialIcon({ Icon, href }: SocialIconProps) {
   return (
     <a 
       href={href} 
@@ -172,13 +171,18 @@ function SocialIcon({ Icon, href }) {
   );
 }
 
-function FooterLink({ text }) {
+interface FooterLinkProps {
+  text: string;
+  href?: string;
+}
+
+function FooterLink({ text, href = "#" }: FooterLinkProps) {
   return (
     <li>
-      <a href="#" className="hover:text-purple-400 transition-colors flex items-center gap-2 group">
+      <Link href={href} className="hover:text-purple-400 transition-colors flex items-center gap-2 group">
         <ArrowUpRight size={12} className="opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all" />
         {text}
-      </a>
+      </Link>
     </li>
   );
 }
