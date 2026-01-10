@@ -15,8 +15,19 @@ type VehicleAPI = {
   image: string;
 };
 
-// --- 2. STATIC METADATA (To enrich the simple API data) ---
-// This fills in the details (desc, features) based on the category name
+// --- 2. CONFIGURATION ---
+
+// Define the exact order you want the tabs to appear
+const CATEGORY_ORDER = [
+  "Sedan", 
+  "SUV", 
+  "Premium SUV", 
+  "Traveller", 
+  "Urbania", 
+  "Bus/Tempo" 
+];
+
+// Enrich API data with descriptions & features
 const FLEET_METADATA: Record<string, any> = {
   "Sedan": {
     desc: "The ideal choice for city transfers and small families. Compact yet spacious, offering a smooth and economical ride.",
@@ -33,12 +44,22 @@ const FLEET_METADATA: Record<string, any> = {
     features: ["VIP Chauffeur", "Climate Control", "Leather Seats", "Priority Support"],
     specs: { seats: "7 Passengers", bags: "5 Bags", fuel: "Diesel" },
   },
+  "Traveller": {
+    desc: "The ultimate group travel solution. Perfect for weddings and extended family trips with ample aisle space.",
+    features: ["Pushback Seats", "Individual AC Vents", "Charging Points", "Ample Luggage Space"],
+    specs: { seats: "17/20/26 Seats", bags: "15+ Bags", fuel: "Diesel" }, // ✅ 17, 20, 26
+  },
+  "Urbania": {
+    desc: "The next generation of luxury vans. Force Urbania offers unmatched comfort, modern aesthetics, and superior suspension.",
+    features: ["Luxury Recliners", "Panoramic Windows", "Ambient Lighting", "Superior Suspension"],
+    specs: { seats: "17 Seats", bags: "12+ Bags", fuel: "Diesel" }, // ✅ Fixed to realistic 17
+  },
   "Bus/Tempo": {
     desc: "The best solution for large groups and pilgrimages. Travel together in comfort with ample space for luggage.",
     features: ["Pushback Seats", "Stereo System", "First Aid Kit", "Ample Luggage Space"],
-    specs: { seats: "12+ Passengers", bags: "10+ Bags", fuel: "Diesel" },
+    specs: { seats: "32/40/50 Seats", bags: "30+ Bags", fuel: "Diesel" }, // ✅ Added 32 here
   },
-  // Fallback for unknown categories
+  // Fallback
   "default": {
     desc: "Reliable and comfortable taxi service for your journey.",
     features: ["AC & Heater", "Clean Interiors", "Experienced Driver", "24/7 Support"],
@@ -54,7 +75,7 @@ export function Fleet() {
   const containerRef = useRef(null);
   const contentRef = useRef(null);
 
-  // --- 3. FETCH DATA FROM API ---
+  // --- 3. FETCH & SORT DATA ---
   useEffect(() => {
     async function fetchFleet() {
       try {
@@ -62,14 +83,31 @@ export function Fleet() {
         const data = await res.json();
         
         if (Array.isArray(data)) {
-          // Merge API data with Static Metadata
-          const enrichedData = data.map((v: VehicleAPI) => {
+          // A. Merge Metadata
+          let enrichedData = data.map((v: VehicleAPI) => {
             const meta = FLEET_METADATA[v.category] || FLEET_METADATA["default"];
+            
+            // Hardcode prices for display (26/km & 34/km)
+            let displayPrice = v.pricePerKm;
+            if (v.category === "Traveller") displayPrice = 26;
+            if (v.category === "Urbania") displayPrice = 34;
+
             return {
               ...v,
-              ...meta, // Adds desc, specs, features
+              ...meta,
+              pricePerKm: displayPrice
             };
           });
+
+          // B. SORTING LOGIC (Custom Order)
+          enrichedData.sort((a, b) => {
+            const indexA = CATEGORY_ORDER.indexOf(a.category);
+            const indexB = CATEGORY_ORDER.indexOf(b.category);
+            const rankA = indexA === -1 ? 999 : indexA;
+            const rankB = indexB === -1 ? 999 : indexB;
+            return rankA - rankB;
+          });
+
           setVehicles(enrichedData);
         }
       } catch (error) {
@@ -81,9 +119,9 @@ export function Fleet() {
     fetchFleet();
   }, []);
 
-  // --- 4. GSAP ANIMATION (Unchanged logic) ---
+  // --- 4. GSAP ANIMATION ---
   useGSAP(() => {
-    if (loading || vehicles.length === 0) return; // Don't animate if loading
+    if (loading || vehicles.length === 0) return;
 
     const isMobile = window.innerWidth < 768;
     const config = {
@@ -148,7 +186,7 @@ export function Fleet() {
           </p>
         </div>
 
-        {/* TABS (Dynamic from API) */}
+        {/* TABS */}
         <div className="sticky top-20 md:top-6 z-40 mb-12 flex justify-center touch-manipulation">
           <div className="flex flex-wrap justify-center p-1.5 gap-1 rounded-full bg-white/5 border border-white/10 backdrop-blur-xl shadow-[0_10px_40px_rgba(0,0,0,0.5)]">
             {vehicles.map((car, index) => (

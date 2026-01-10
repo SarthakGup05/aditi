@@ -104,11 +104,7 @@ export function Footer() {
                <span className="font-mono tracking-wide">GSTIN: 09AMMPY0323J1ZN</span>
             </div>
 
-            <div className="flex gap-4 pt-2">
-              <SocialIcon Icon={Instagram} href="#" />
-              <SocialIcon Icon={Facebook} href="#" />
-              <SocialIcon Icon={Twitter} href="#" />
-            </div>
+         
           </div>
 
           {/* Column 2: Quick Links (Updated) */}
@@ -125,17 +121,10 @@ export function Footer() {
           <div className="footer-anim">
             <h4 className="font-bold text-white mb-6 uppercase tracking-wider text-xs">Visit Us</h4>
             <ul className="space-y-6 text-sm text-gray-400">
-              <li className="flex items-start gap-3">
-                <MapPin className="text-purple-500 shrink-0 mt-0.5" size={18} />
-                <span>
-                  Sector 12, Gomti Nagar,<br />
-                  Lucknow, Uttar Pradesh,<br />
-                  India 226010
-                </span>
-              </li>
+             
               <li className="flex items-center gap-3">
                 <Mail className="text-purple-500 shrink-0" size={18} />
-                <span>contact@adititravels.com</span>
+                <span>adititravels192@gmail.com</span>
               </li>
             </ul>
           </div>

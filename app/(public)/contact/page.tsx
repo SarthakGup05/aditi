@@ -120,7 +120,7 @@ export default function ContactPage() {
             </a>
 
             {/* Address */}
-            <div className="contact-card p-8 rounded-3xl bg-[#0A0A0A] border border-white/10 hover:bg-white/5 transition-colors">
+            {/* <div className="contact-card p-8 rounded-3xl bg-[#0A0A0A] border border-white/10 hover:bg-white/5 transition-colors">
               <div className="flex items-center gap-4 mb-4">
                 <div className="p-3 rounded-full bg-gray-800 text-gray-400">
                   <MapPin size={20} />
@@ -147,7 +147,7 @@ export default function ContactPage() {
       </section>
 
       {/* 3. MAP */}
-      <section className="mt-20 md:mt-32 relative">
+      {/* <section className="mt-20 md:mt-32 relative">
         <div className="w-full h-[350px] md:h-[500px] bg-[#111] relative group overflow-hidden border-y border-white/10">
           <div className="absolute inset-0 z-10 bg-purple-900/10 pointer-events-none mix-blend-overlay" />
           <iframe 
@@ -162,7 +162,7 @@ export default function ContactPage() {
             title="Aditi Tour and Travel Location"
           ></iframe>
         </div>
-      </section>
+      </section> */}
 
       <FloatingContact phone="+919919999999" whatsapp="919919999999" />
     </main>

@@ -21,7 +21,7 @@ type RouteAPI = {
   basePrice: number;
 };
 
-// Helper to assign tags based on keywords (Optional visual flair)
+// Helper to assign tags
 const getTag = (title: string) => {
   if (title.includes("Ayodhya") || title.includes("Varanasi") || title.includes("Prayagraj")) return "Spiritual";
   if (title.includes("Delhi") || title.includes("Airport")) return "Business";
@@ -34,7 +34,7 @@ export function PopularRoutes() {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [isPaused, setIsPaused] = useState(false);
   
-  // State for API Data
+  // Data State
   const [routes, setRoutes] = useState<RouteAPI[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -56,36 +56,41 @@ export function PopularRoutes() {
     fetchRoutes();
   }, []);
 
-  // --- 2. ANIMATION LOGIC (Runs only after loading) ---
+  // --- 2. OPTIMIZED ANIMATION LOGIC ---
   useGSAP(() => {
     if (loading || routes.length === 0) return;
 
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: containerRef.current,
-        start: "top 70%",
-        toggleActions: "play none none reverse",
-      }
+    const mm = gsap.matchMedia();
+
+    // DESKTOP: Full Staggered Animation
+    mm.add("(min-width: 768px)", () => {
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: containerRef.current,
+          start: "top 70%",
+          toggleActions: "play none none reverse",
+        }
+      });
+
+      tl.from(".anim-text", {
+        y: 50, opacity: 0, duration: 1, stagger: 0.15, ease: "power3.out"
+      })
+      .from(".anim-card", {
+        x: 100, opacity: 0, duration: 0.8, stagger: 0.1, ease: "power2.out", clearProps: "all"
+      }, "-=0.5");
     });
 
-    // Text Reveal
-    tl.from(".anim-text", {
-      y: 50,
-      opacity: 0,
-      duration: 1,
-      stagger: 0.15,
-      ease: "power3.out"
-    })
-    
-    // Cards Cascade
-    .from(".anim-card", {
-      x: 100,
-      opacity: 0,
-      duration: 0.8,
-      stagger: 0.1,
-      ease: "power2.out",
-      clearProps: "all"
-    }, "-=0.5");
+    // MOBILE: Simple Fade In (High Performance)
+    mm.add("(max-width: 767px)", () => {
+      gsap.to(containerRef.current, {
+        opacity: 1,
+        duration: 0.5,
+        scrollTrigger: {
+          trigger: containerRef.current,
+          start: "top 80%",
+        }
+      });
+    });
 
   }, { scope: containerRef, dependencies: [loading, routes] });
 
@@ -101,9 +106,12 @@ export function PopularRoutes() {
     }
   };
 
-  // --- Auto-Play Logic ---
+  // --- Auto-Play Logic (Desktop Only for Performance) ---
   useEffect(() => {
-    if (isPaused || loading) return;
+    // Disable auto-play on mobile to prevent scroll jank
+    const isMobile = window.innerWidth < 768;
+    if (isPaused || loading || isMobile) return;
+
     const interval = setInterval(() => {
       if (scrollContainerRef.current) {
         const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
@@ -128,7 +136,7 @@ export function PopularRoutes() {
 
   // --- MAIN RENDER ---
   return (
-    <section ref={containerRef} className="w-full bg-[#050505] py-16 md:py-24 overflow-hidden">
+    <section ref={containerRef} className="w-full bg-[#050505] py-16 md:py-24 overflow-hidden opacity-0 md:opacity-100">
       <div className="container mx-auto max-w-7xl px-4 md:px-6">
         
         {/* --- Header --- */}
@@ -142,7 +150,7 @@ export function PopularRoutes() {
             </h2>
           </div>
 
-          {/* Controls */}
+          {/* Controls (Hidden on Mobile) */}
           <div className="anim-text hidden md:flex items-center gap-3">
              <button 
                onClick={() => setIsPaused(!isPaused)}
@@ -165,7 +173,7 @@ export function PopularRoutes() {
           className="
             flex gap-4 overflow-x-auto pb-8 snap-x snap-mandatory
             -mx-4 px-4 md:mx-0 md:px-0
-            touch-pan-x
+            touch-pan-x will-change-transform
             [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]
           "
         >
@@ -190,7 +198,8 @@ export function PopularRoutes() {
                   alt={route.title}
                   fill
                   className="object-cover transition-transform duration-700 group-hover:scale-110"
-                  sizes="(max-width: 768px) 600px, 800px"
+                  sizes="(max-width: 768px) 300px, 400px" // Optimized sizes
+                  loading="lazy"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/50 to-transparent" />
               </div>
@@ -233,12 +242,7 @@ export function PopularRoutes() {
           ))}
           
           {/* Mobile View All Link */}
-          <div className="anim-card md:hidden shrink-0 snap-center w-[150px] flex items-center justify-center">
-            <Link href="/routes" className="flex flex-col items-center gap-3 text-gray-400 group">
-              <div className="h-14 w-14 rounded-full border border-white/10 flex items-center justify-center bg-white/5 group-active:scale-95 transition-transform"><ArrowRight size={24} /></div>
-              <span className="text-sm font-medium">View All Routes</span>
-            </Link>
-          </div>
+
 
         </div>
       </div>

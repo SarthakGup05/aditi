@@ -60,13 +60,26 @@ model ServiceRoute {
 model VehiclePackage {
   id          Int      @id @default(autoincrement())
   
-  title       String   // e.g. "Toyota Etios" (Formerly carModel)
-  category    String   // e.g. "Sedan"
-  pricePerKm  Int      // e.g. 12 (Per Km rate)
+  // 1. Basic Info
+  category    String   // e.g. "Sedan", "Traveller", "Urbania"
+  title       String   // e.g. "Swift Dzire / Etios"
+  image       String   // Image URL
   
-  image       String   // Kept this so your UI doesn't break
+  // 2. Pricing
+  pricePerKm  Int      // e.g. 12 (Kept as Int for calculations)
+  
+  // 3. UI Content (New Fields to match your Fleet Component)
+  description String   // e.g. "The ultimate group travel solution..."
+  
+  // 4. Specs (Strings allow flexibility like "17/20/26 Seats")
+  seats       String   // e.g. "4", "17/20/26"
+  bags        String   // e.g. "2 Bags", "15+ Bags"
+  fuel        String   // e.g. "CNG/Diesel"
+  
+  // 5. Features List
+  // Example data: ["Pushback Seats", "Individual AC Vents", "Charging Points"]
+  features    Json     
 }
-
 // --- 4. DESTINATION GALLERY ("Sights Along the Way") ---
 model RouteGallery {
   id        Int      @id @default(autoincrement())

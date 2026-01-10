@@ -86,7 +86,7 @@ export function Testimonials() {
     <section 
       ref={containerRef} 
       // FIXED: pb-10 removes the huge gap, z-20 keeps it above footer layers
-      className="relative w-full bg-[#050505] pt-24 pb-10 md:py-32 overflow-hidden text-white z-20"
+      className="relative w-full bg-[#050505] pt-20 pb-10 md:py-20 overflow-hidden text-white z-20"
     >
       
       {/* --- BACKGROUND DECOR --- */}

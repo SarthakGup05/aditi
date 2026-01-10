@@ -39,32 +39,56 @@ async function main() {
   console.log('🚗 Seeding Global Fleet...')
   
   await prisma.vehiclePackage.createMany({
-    data: [
-      {
-        title: "Swift Dzire / Etios",
-        category: "Sedan",
-        pricePerKm: 11,
-        image: "https://images.unsplash.com/photo-1663852397535-18292e115327?q=80&w=580&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-      },
-      {
-        title: "Maruti Ertiga",
-        category: "SUV",
-        pricePerKm: 14,
-        image: "https://i.pinimg.com/736x/21/dc/51/21dc514ae50fd7cf46aa2b42bc89a66d.jpg"
-      },
-      {
-        title: "Toyota Innova Crysta",
-        category: "Premium SUV",
-        pricePerKm: 18,
-        image: "https://i.pinimg.com/736x/77/b1/35/77b1352892d9732cff5ab4a2e86c2cad.jpg"
-      },
-      {
-        title: "Tempo Traveller",
-        category: "Bus/Tempo",
-        pricePerKm: 24,
-        image: "https://i.pinimg.com/736x/5c/d0/b5/5cd0b5267ca6514a3db7fb600b192acb.jpg"
-      }
-    ]
+    data:[
+  {
+    "id": 1,
+    "title": "Swift Dzire / Etios",
+    "category": "Sedan",
+    "pricePerKm": 11,
+    "image": "https://images.unsplash.com/photo-1663852397535-18292e115327?q=80&w=580&auto=format&fit=crop",
+    "description": "The ideal choice for city transfers and small families. Compact yet spacious, offering a smooth and economical ride.",
+    "seats": "4 Passengers",
+    "bags": "2 Bags",
+    "fuel": "CNG/Diesel",
+    "features": ["Chauffeur Driven", "AC & Heater", "Daily Sanitization", "Music System"]
+  },
+  {
+    "id": 2,
+    "title": "Maruti Ertiga",
+    "category": "SUV",
+    "pricePerKm": 14,
+    "image": "https://i.pinimg.com/1200x/7d/a2/6e/7da26e9f87f423ee0ccdb96f8a89cd87.jpg",
+    "description": "Perfect for outstation trips with family. Experience superior legroom and powerful performance on highways.",
+    "seats": "6 Passengers",
+    "bags": "3 Bags",
+    "fuel": "Diesel",
+    "features": ["Dual AC", "Roof Carrier", "Extra Boot Space", "Reclining Seats"]
+  },
+  {
+    "id": 3,
+    "title": "Toyota Innova Crysta",
+    "category": "Premium SUV",
+    "pricePerKm": 18,
+    "image": "https://i.pinimg.com/1200x/b7/4e/e9/b74ee929de8581e7251749d1bcbf3a16.jpg",
+    "description": "Make a statement with our premium fleet. Unmatched luxury, leather interiors, and VIP treatment for corporate clients.",
+    "seats": "7 Passengers",
+    "bags": "4 Bags",
+    "fuel": "Diesel",
+    "features": ["VIP Chauffeur", "Captain Seats", "Climate Control", "Priority Support"]
+  },
+  {
+    "id": 4,
+    "title": "Tempo Traveller / Urbania",
+    "category": "Traveller",
+    "pricePerKm": 26,
+    "image": "https://i.pinimg.com/736x/41/4d/c8/414dc896784dcccb36cbf7e3f7adcd11.jpg",
+    "description": "The ultimate group travel solution. Spacious aisle, pushback seats, and ample luggage space for weddings and pilgrimages.",
+    "seats": "17/20/26 Seats",
+    "bags": "15+ Bags",
+    "fuel": "Diesel",
+    "features": ["Pushback Seats", "Individual AC Vents", "Charging Points", "Music System"]
+  }
+]
   })
 
   // ---------------------------------------------------------

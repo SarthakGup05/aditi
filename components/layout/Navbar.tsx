@@ -158,9 +158,7 @@ export function Navbar() {
                                 </Link>
                               ))}
                               <div className="h-px bg-white/10 my-1" />
-                              <Link href="/routes" className="block text-center py-3 text-xs font-bold text-purple-400 hover:text-purple-300 uppercase tracking-wide">
-                                View All Routes
-                              </Link>
+                             
                             </>
                         ) : (
                             <span className="p-4 text-xs text-gray-500 text-center">No active routes</span>

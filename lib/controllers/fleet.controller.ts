@@ -1,4 +1,4 @@
-import  prisma  from "@/lib/db";
+import  db  from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 
 export class FleetController {
@@ -6,9 +6,8 @@ export class FleetController {
   // GET ALL
   static async getAll() {
     try {
-      const fleets = await prisma.vehiclePackage.findMany({
-        orderBy: { id: 'desc' }
-        // ❌ REMOVED: include: { route: ... } (No longer exists)
+      const fleets = await db.vehiclePackage.findMany({
+        orderBy: { id: 'asc' } // Sorted by ID so they appear in order (1, 2, 3...)
       });
       return NextResponse.json(fleets);
     } catch (error) {
@@ -20,9 +19,8 @@ export class FleetController {
   // GET BY ID
   static async getById(id: number) {
     try {
-      const fleet = await prisma.vehiclePackage.findUnique({
+      const fleet = await db.vehiclePackage.findUnique({
         where: { id }
-        // ❌ REMOVED: include: { route: ... }
       });
       
       if (!fleet) return NextResponse.json({ error: "Not found" }, { status: 404 });
@@ -34,18 +32,24 @@ export class FleetController {
     }
   }
 
-  // CREATE
+  // CREATE (Updated for new Schema)
   static async create(req: NextRequest) {
     try {
       const body = await req.json();
 
-      const newFleet = await prisma.vehiclePackage.create({
+      const newFleet = await db.vehiclePackage.create({
         data: {
-          title: body.title,             // ✅ Was 'carModel'
+          title: body.title,
           category: body.category,
-          pricePerKm: Number(body.pricePerKm), // ✅ Was 'price'
+          pricePerKm: Number(body.pricePerKm),
           image: body.image || "",
-          // ❌ REMOVED: seats, bags, routeId
+          
+          // 🟢 NEW FIELDS
+          description: body.description || "",
+          seats: body.seats || "",
+          bags: body.bags || "",
+          fuel: body.fuel || "",
+          features: body.features || [], // Saves as JSON array
         }
       });
 
@@ -56,18 +60,25 @@ export class FleetController {
     }
   }
 
-  // UPDATE BY ID
+  // UPDATE (Updated for new Schema)
   static async update(id: number, req: NextRequest) {
     try {
       const body = await req.json();
 
-      const updatedFleet = await prisma.vehiclePackage.update({
+      const updatedFleet = await db.vehiclePackage.update({
         where: { id },
         data: {
           title: body.title,
           category: body.category,
           pricePerKm: body.pricePerKm ? Number(body.pricePerKm) : undefined,
           image: body.image,
+          
+          // 🟢 NEW FIELDS (Only update if provided)
+          description: body.description,
+          seats: body.seats,
+          bags: body.bags,
+          fuel: body.fuel,
+          features: body.features,
         }
       });
 
@@ -78,10 +89,10 @@ export class FleetController {
     }
   }
 
-  // DELETE BY ID
+  // DELETE
   static async delete(id: number) {
     try {
-      await prisma.vehiclePackage.delete({
+      await db.vehiclePackage.delete({
         where: { id }
       });
       return NextResponse.json({ success: true });
