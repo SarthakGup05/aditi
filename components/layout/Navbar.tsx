@@ -32,8 +32,7 @@ export function Navbar() {
   useEffect(() => {
     const fetchRoutes = async () => {
       try {
-        // Only fetch if we haven't already (prevents re-fetching on simple re-renders)
-        if (routes.length > 0) return;
+        if (routes.length > 0) return; // Prevent re-fetching
 
         const res = await fetch("/api/routes");
         if (res.ok) {
@@ -75,7 +74,7 @@ export function Navbar() {
   // 4. UX: Lock Body Scroll when mobile menu is open
   useEffect(() => {
     document.body.style.overflow = isOpen ? "hidden" : "unset";
-    return () => { document.body.style.overflow = "unset"; }; // Cleanup
+    return () => { document.body.style.overflow = "unset"; }; 
   }, [isOpen]);
 
   // 5. UX: Handle Click Outside to close Dropdowns
@@ -157,8 +156,7 @@ export function Navbar() {
                                     <ArrowRight size={14} className="opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-purple-400"/>
                                 </Link>
                               ))}
-                              <div className="h-px bg-white/10 my-1" />
-                             
+                              {/* View All Routes Removed */}
                             </>
                         ) : (
                             <span className="p-4 text-xs text-gray-500 text-center">No active routes</span>
@@ -183,7 +181,7 @@ export function Navbar() {
 
           {/* --- CTA & MOBILE TOGGLE --- */}
           <div className="flex items-center gap-4 z-[101]">
-            <a href="tel:+919999999999"> {/* Replace with real number */}
+            <a href="tel:+919999999999"> {/* ✅ Phone Link */}
               <Button
                 className={`hidden md:flex rounded-full px-6 font-semibold transition-all ${
                   scrolled
@@ -211,7 +209,7 @@ export function Navbar() {
         className={`fixed inset-0 z-[90] bg-black/60 backdrop-blur-sm transition-opacity duration-300 md:hidden ${
           isOpen ? "opacity-100 visible" : "opacity-0 invisible pointer-events-none"
         }`}
-        onClick={() => setIsOpen(false)} // Close when clicking blurred background
+        onClick={() => setIsOpen(false)} 
       />
 
       {/* --- MOBILE DRAWER --- */}
@@ -248,12 +246,7 @@ export function Navbar() {
                         </Link>
                     ))
                 )}
-                <Link 
-                    href="/routes" 
-                    className="text-sm font-bold text-purple-400 mt-2 uppercase tracking-wide flex items-center gap-2"
-                >
-                    View All Routes <ArrowRight size={12}/>
-                </Link>
+                {/* View All Routes Removed */}
             </div>
           </div>
 
@@ -266,7 +259,7 @@ export function Navbar() {
           </Link>
 
           <div className="mt-auto pt-6 space-y-4">
-            <a href="tel:+919999999999" className="block w-full">
+            <a href="tel:+919999999999" className="block w-full"> {/* ✅ Phone Link */}
                 <Button className="w-full h-14 rounded-2xl bg-white text-black font-bold text-lg hover:bg-gray-200 flex items-center justify-center gap-2">
                     <Phone size={20} /> Book a Taxi Now
                 </Button>
