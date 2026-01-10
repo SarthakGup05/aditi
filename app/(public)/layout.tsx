@@ -5,7 +5,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import SmoothWrapper from "@/components/layout/SmoothWrapper";
 import { FloatingContact } from "@/components/ui/floating-contact";
-import NextTopLoader from 'nextjs-toploader'; 
+import NextTopLoader from 'nextjs-toploader';
 
 export default function PublicLayout({
   children,
@@ -39,7 +39,7 @@ export default function PublicLayout({
         {children}
       </main>
       <Footer />
-      <FloatingContact phone="+1234567890" whatsapp="+1234567890"/>
+      <FloatingContact phone="918127581898" whatsapp="918127581898" />
     </div>
   );
 

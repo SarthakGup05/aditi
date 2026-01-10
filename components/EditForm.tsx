@@ -5,29 +5,29 @@ import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Save, Edit, Loader2, Lock, Layout, Image as ImageIcon, Search } from "lucide-react";
+import { Save, Edit, Loader2, Lock, Layout, Image as ImageIcon, Search, Trash2 } from "lucide-react";
 
 import { Form } from "@/components/ui/form";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 // Check your imports match your folder structure
-import { AppModal } from "@/components/modal"; 
-import { 
-  AppFormInput, 
-  AppFormTextarea, 
-  AppFormSelect, 
+import { AppModal } from "@/components/modal";
+import {
+  AppFormInput,
+  AppFormTextarea,
+  AppFormSelect,
 } from "@/components/form";
 
 // --- ZOD SCHEMA ---
 const formSchema = z.object({
   title: z.string().min(2, "Title is required"),
-  slug: z.string(), 
+  slug: z.string(),
   tagline: z.string().optional(),
   basePrice: z.number().min(0),
   distance: z.string().min(1),
   duration: z.string().min(1),
   heroImage: z.string().url("Must be a valid URL"),
   description: z.string().min(10),
-  isActive: z.string(), 
+  isActive: z.string(),
   metaTitle: z.string().optional(),
   keywords: z.string().optional(),
   metaDescription: z.string().optional(),
@@ -42,6 +42,12 @@ export function EditRouteModal({ slug }: EditRouteModalProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+
+  // Gallery State
+  const [gallery, setGallery] = useState<any[]>([]);
+  const [newImage, setNewImage] = useState("");
+  const [isAddingImage, setIsAddingImage] = useState(false);
+  const [routeId, setRouteId] = useState<number | null>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -60,6 +66,10 @@ export function EditRouteModal({ slug }: EditRouteModalProps) {
         try {
           const res = await fetch(`/api/routes/${slug}`);
           const data = await res.json();
+
+          setRouteId(data.id);
+          setGallery(data.gallery || []); // Load gallery
+
           form.reset({
             title: data.title,
             slug: data.slug,
@@ -84,6 +94,38 @@ export function EditRouteModal({ slug }: EditRouteModalProps) {
     }
   }, [isOpen, slug, form]);
 
+  // Gallery Handlers
+  const handleAddImage = async () => {
+    if (!newImage || !routeId) return;
+    setIsAddingImage(true);
+    try {
+      const res = await fetch("/api/gallery", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ routeId, imageUrl: newImage })
+      });
+      if (res.ok) {
+        const addedImage = await res.json();
+        setGallery((prev) => [...prev, addedImage]);
+        setNewImage("");
+      }
+    } catch (err) {
+      alert("Failed to add image");
+    } finally {
+      setIsAddingImage(false);
+    }
+  };
+
+  const handleDeleteImage = async (imageId: number) => {
+    if (!confirm("Remove this image?")) return;
+    try {
+      await fetch(`/api/gallery/${imageId}`, { method: "DELETE" });
+      setGallery((prev) => prev.filter(img => img.id !== imageId));
+    } catch (err) {
+      alert("Failed to delete image");
+    }
+  };
+
   // 2. Submit Data
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsSaving(true);
@@ -97,8 +139,8 @@ export function EditRouteModal({ slug }: EditRouteModalProps) {
 
       if (!res.ok) throw new Error("Failed to update");
 
-      router.refresh(); 
-      setIsOpen(false); 
+      router.refresh();
+      setIsOpen(false);
     } catch (error) {
       alert("Failed to save changes");
     } finally {
@@ -112,7 +154,7 @@ export function EditRouteModal({ slug }: EditRouteModalProps) {
       onOpenChange={setIsOpen}
       title="Edit Route"
       description={`Editing details for ${slug}`}
-      className="max-w-3xl bg-[#09090b] border border-white/10 shadow-2xl shadow-purple-900/10"
+      className="max-w-4xl bg-[#09090b] border border-white/10 shadow-2xl shadow-purple-900/10"
       trigger={
         <button className="p-2.5 bg-white/5 hover:bg-purple-500/20 rounded-lg text-gray-300 hover:text-purple-300 transition-all border border-transparent hover:border-purple-500/30">
           <Edit size={18} />
@@ -127,26 +169,32 @@ export function EditRouteModal({ slug }: EditRouteModalProps) {
       ) : (
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col h-full">
-            
+
             {/* --- TABS INTERFACE --- */}
             <Tabs defaultValue="details" className="w-full">
-              
+
               {/* IMPROVED TAB LIST VISIBILITY */}
-              <TabsList className="grid w-full grid-cols-3 bg-black/40 p-1 border border-white/15 rounded-xl mb-6">
-                <TabsTrigger 
-                  value="details" 
+              <TabsList className="grid w-full grid-cols-4 bg-black/40 p-1 border border-white/15 rounded-xl mb-6">
+                <TabsTrigger
+                  value="details"
                   className="gap-2 rounded-lg data-[state=active]:bg-purple-600 data-[state=active]:text-white data-[state=active]:shadow-lg text-gray-400 hover:text-gray-200 transition-all"
                 >
                   <Layout size={14} /> Basic Details
                 </TabsTrigger>
-                <TabsTrigger 
-                  value="content" 
+                <TabsTrigger
+                  value="content"
                   className="gap-2 rounded-lg data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-lg text-gray-400 hover:text-gray-200 transition-all"
                 >
                   <ImageIcon size={14} /> Content
                 </TabsTrigger>
-                <TabsTrigger 
-                  value="seo" 
+                <TabsTrigger
+                  value="gallery"
+                  className="gap-2 rounded-lg data-[state=active]:bg-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg text-gray-400 hover:text-gray-200 transition-all"
+                >
+                  <ImageIcon size={14} /> Gallery
+                </TabsTrigger>
+                <TabsTrigger
+                  value="seo"
                   className="gap-2 rounded-lg data-[state=active]:bg-green-600 data-[state=active]:text-white data-[state=active]:shadow-lg text-gray-400 hover:text-gray-200 transition-all"
                 >
                   <Search size={14} /> SEO
@@ -156,73 +204,123 @@ export function EditRouteModal({ slug }: EditRouteModalProps) {
               {/* TAB 1: DETAILS */}
               <TabsContent value="details" className="mt-0 space-y-5 animate-in fade-in slide-in-from-bottom-2 duration-300">
                 <div className="grid grid-cols-2 gap-5">
-                    <AppFormInput name="title" label="Route Title" placeholder="e.g. Jaipur to Agra" />
-                    
-                    {/* Read Only Field styling */}
-                    <div className="relative group">
-                        <div className="absolute right-3 top-9 text-gray-600 group-hover:text-gray-400 transition-colors">
-                            <Lock size={14} />
-                        </div>
-                        <AppFormInput 
-                            name="slug" 
-                            label="Slug (Locked)" 
-                            className="bg-white/5 border-dashed border-white/10 text-gray-500 cursor-not-allowed select-none" 
-                        />
-                    </div>
+                  <AppFormInput name="title" label="Route Title" placeholder="e.g. Jaipur to Agra" />
 
-                    <AppFormInput name="distance" label="Distance" placeholder="e.g. 240 km" />
-                    <AppFormInput name="duration" label="Duration" placeholder="e.g. 5 Hours" />
-                    <AppFormInput name="basePrice" label="Base Price (₹)" type="number" />
-                    <AppFormSelect 
-                        name="isActive" 
-                        label="Visibility Status" 
-                        options={[
-                            { label: "Active (Visible)", value: "true" },
-                            { label: "Draft (Hidden)", value: "false" }
-                        ]} 
+                  {/* Read Only Field styling */}
+                  <div className="relative group">
+                    <div className="absolute right-3 top-9 text-gray-600 group-hover:text-gray-400 transition-colors">
+                      <Lock size={14} />
+                    </div>
+                    <AppFormInput
+                      name="slug"
+                      label="Slug (Locked)"
+                      className="bg-white/5 border-dashed border-white/10 text-gray-500 cursor-not-allowed select-none"
                     />
+                  </div>
+
+                  <AppFormInput name="distance" label="Distance" placeholder="e.g. 240 km" />
+                  <AppFormInput name="duration" label="Duration" placeholder="e.g. 5 Hours" />
+                  <AppFormInput name="basePrice" label="Base Price (₹)" type="number" />
+                  <AppFormSelect
+                    name="isActive"
+                    label="Visibility Status"
+                    options={[
+                      { label: "Active (Visible)", value: "true" },
+                      { label: "Draft (Hidden)", value: "false" }
+                    ]}
+                  />
                 </div>
               </TabsContent>
 
               {/* TAB 2: CONTENT */}
               <TabsContent value="content" className="mt-0 space-y-5 animate-in fade-in slide-in-from-bottom-2 duration-300">
-                 <AppFormInput name="tagline" label="Tagline" placeholder="e.g. The Pink City Express" />
-                 <AppFormInput name="heroImage" label="Hero Image URL" placeholder="https://..." />
-                 <AppFormTextarea name="description" label="Full Description" rows={6} placeholder="Write a catchy description about the route..." />
+                <AppFormInput name="tagline" label="Tagline" placeholder="e.g. The Pink City Express" />
+                <AppFormInput name="heroImage" label="Hero Image URL" placeholder="https://..." />
+                <AppFormTextarea name="description" label="Full Description" rows={6} placeholder="Write a catchy description about the route..." />
               </TabsContent>
 
-              {/* TAB 3: SEO */}
+              {/* TAB 3: GALLERY (NEW) */}
+              <TabsContent value="gallery" className="mt-0 space-y-5 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                <div className="bg-white/5 border border-white/10 rounded-xl p-5">
+                  <h3 className="text-white font-medium mb-4">Manage Gallery Images</h3>
+
+                  {/* Add Image */}
+                  <div className="flex gap-2 mb-6">
+                    <input
+                      type="text"
+                      value={newImage}
+                      onChange={(e) => setNewImage(e.target.value)}
+                      placeholder="Enter image URL..."
+                      className="flex-1 bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-pink-500"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleAddImage}
+                      disabled={isAddingImage || !newImage}
+                      className="bg-pink-600 hover:bg-pink-500 disabled:opacity-50 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                    >
+                      {isAddingImage ? "Adding..." : "Add Image"}
+                    </button>
+                  </div>
+
+                  {/* Image Grid */}
+                  <div className="grid grid-cols-3 gap-4">
+                    {gallery.length === 0 && (
+                      <div className="col-span-3 text-center py-10 text-gray-500 text-sm border-2 border-dashed border-white/5 rounded-xl">
+                        No images in gallery. Add one above.
+                      </div>
+                    )}
+                    {gallery.map((img) => (
+                      <div key={img.id} className="group relative aspect-video bg-black/40 rounded-lg overflow-hidden border border-white/10">
+                        <img src={img.imageUrl} alt="gallery" className="w-full h-full object-cover" />
+                        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteImage(img.id)}
+                            className="text-red-400 hover:text-red-300 bg-white/10 p-2 rounded-full hover:bg-white/20 transition-all"
+                          >
+                            <Loader2 size={20} className="hidden" /> {/* keeping for import usage */}
+                            <Trash2 size={20} />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </TabsContent>
+
+              {/* TAB 4: SEO */}
               <TabsContent value="seo" className="mt-0 space-y-5 animate-in fade-in slide-in-from-bottom-2 duration-300">
-                 <div className="bg-white/5 rounded-lg p-4 mb-4 border border-white/10">
-                    <p className="text-xs text-gray-400 mb-1 uppercase tracking-widest font-bold">Preview</p>
-                    <p className="text-blue-400 text-lg hover:underline cursor-pointer truncate">
-                        {form.watch("metaTitle") || form.watch("title") || "Page Title"}
-                    </p>
-                    <p className="text-green-500 text-sm mb-1 truncate">
-                        https://adititravels.com/routes/{slug}
-                    </p>
-                    <p className="text-gray-400 text-sm line-clamp-2">
-                        {form.watch("metaDescription") || form.watch("description") || "Page description..."}
-                    </p>
-                 </div>
-                 <AppFormInput name="metaTitle" label="Meta Title" placeholder="Leave empty to use Route Title" />
-                 <AppFormInput name="keywords" label="Keywords" placeholder="taxi, cab, travel..." />
-                 <AppFormTextarea name="metaDescription" label="Meta Description" rows={3} />
+                <div className="bg-white/5 rounded-lg p-4 mb-4 border border-white/10">
+                  <p className="text-xs text-gray-400 mb-1 uppercase tracking-widest font-bold">Preview</p>
+                  <p className="text-blue-400 text-lg hover:underline cursor-pointer truncate">
+                    {form.watch("metaTitle") || form.watch("title") || "Page Title"}
+                  </p>
+                  <p className="text-green-500 text-sm mb-1 truncate">
+                    https://adititravels.com/routes/{slug}
+                  </p>
+                  <p className="text-gray-400 text-sm line-clamp-2">
+                    {form.watch("metaDescription") || form.watch("description") || "Page description..."}
+                  </p>
+                </div>
+                <AppFormInput name="metaTitle" label="Meta Title" placeholder="Leave empty to use Route Title" />
+                <AppFormInput name="keywords" label="Keywords" placeholder="taxi, cab, travel..." />
+                <AppFormTextarea name="metaDescription" label="Meta Description" rows={3} />
               </TabsContent>
 
             </Tabs>
 
             {/* --- FOOTER ACTIONS --- */}
             <div className="flex justify-end gap-3 pt-6 border-t border-white/10 mt-6">
-              <button 
-                type="button" 
+              <button
+                type="button"
                 onClick={() => setIsOpen(false)}
                 className="px-5 py-2.5 rounded-xl text-gray-400 hover:text-white hover:bg-white/10 transition-colors text-sm font-medium"
               >
                 Cancel
               </button>
-              <button 
-                type="submit" 
+              <button
+                type="submit"
                 disabled={isSaving}
                 className="bg-purple-600 hover:bg-purple-500 text-white px-8 py-2.5 rounded-xl font-bold flex items-center gap-2 transition-all shadow-lg shadow-purple-900/20 active:scale-95 disabled:opacity-50 disabled:pointer-events-none"
               >

@@ -2,17 +2,17 @@
 
 import { useRef } from "react";
 import Link from "next/link"; // ✅ Added for smoother navigation
-import { 
-  Phone, 
-  MessageCircle, 
-  MapPin, 
-  Facebook, 
-  Instagram, 
-  Twitter, 
+import {
+  Phone,
+  MessageCircle,
+  MapPin,
+  Facebook,
+  Instagram,
+  Twitter,
   ArrowUpRight,
   Mail,
   FileText,
-  LucideIcon 
+  LucideIcon
 } from "lucide-react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
@@ -25,7 +25,7 @@ export function Footer() {
 
   useGSAP(() => {
     const el = footerRef.current;
-    
+
     gsap.fromTo(
       ".footer-anim",
       { y: 30, opacity: 0 },
@@ -37,15 +37,15 @@ export function Footer() {
         ease: "power2.out",
         scrollTrigger: {
           trigger: el,
-          start: "top 90%", 
+          start: "top 90%",
         },
       }
     );
   }, { scope: footerRef });
 
   return (
-    <footer 
-      ref={footerRef} 
+    <footer
+      ref={footerRef}
       className="relative w-full bg-[#020202] border-t border-white/5 text-white overflow-hidden pt-16 pb-10 -mt-10 z-30"
     >
       {/* --- BACKGROUND DECOR --- */}
@@ -55,18 +55,18 @@ export function Footer() {
       </div>
 
       <div className="container mx-auto max-w-7xl px-6 relative z-10">
-        
+
         {/* --- SECTION 1: INSTANT SUPPORT CARD --- */}
         <div className="footer-anim flex flex-col md:flex-row items-center justify-between gap-8 bg-white/5 border border-white/10 rounded-3xl p-8 md:p-10 mb-16 backdrop-blur-sm hover:bg-white/[0.07] transition-colors">
           <div className="text-center md:text-left">
             <h3 className="text-2xl md:text-3xl font-medium mb-2">Need a ride instantly?</h3>
             <p className="text-gray-400">Direct booking via WhatsApp or Phone. 24/7 Available.</p>
           </div>
-          
+
           <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
             {/* WhatsApp */}
-            <a 
-              href="https://wa.me/919999999999" 
+            <a
+              href="https://wa.me/918127581898"
               target="_blank"
               rel="noreferrer"
               className="group flex-1 flex items-center justify-center gap-3 bg-[#25D366]/10 border border-[#25D366]/20 hover:bg-[#25D366]/20 text-[#25D366] px-8 py-4 rounded-xl transition-all active:scale-95"
@@ -76,8 +76,8 @@ export function Footer() {
             </a>
 
             {/* Phone */}
-            <a 
-              href="tel:+919999999999" 
+            <a
+              href="tel:918127581898"
               className="group flex-1 flex items-center justify-center gap-3 bg-white text-black hover:bg-gray-200 px-8 py-4 rounded-xl transition-all active:scale-95"
             >
               <Phone size={20} className="group-hover:rotate-12 transition-transform" />
@@ -88,7 +88,7 @@ export function Footer() {
 
         {/* --- SECTION 2: LINKS GRID --- */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 border-b border-white/5 pb-12 mb-12">
-          
+
           {/* Column 1: Brand Info & GSTIN */}
           <div className="footer-anim space-y-6">
             <span className="text-2xl font-bold tracking-tight">
@@ -97,14 +97,14 @@ export function Footer() {
             <p className="text-sm text-gray-500 leading-relaxed max-w-sm">
               Premium outstation taxi services specializing in Lucknow to Ayodhya, Varanasi, and Delhi NCR routes.
             </p>
-            
+
             {/* GSTIN Badge */}
             <div className="flex items-center gap-2 text-xs text-gray-400 border border-white/10 bg-white/5 p-2 rounded-lg w-fit">
-               <FileText size={14} className="text-purple-400" />
-               <span className="font-mono tracking-wide">GSTIN: 09AMMPY0323J1ZN</span>
+              <FileText size={14} className="text-purple-400" />
+              <span className="font-mono tracking-wide">GSTIN: 09AMMPY0323J1ZN</span>
             </div>
 
-         
+
           </div>
 
           {/* Column 2: Quick Links (Updated) */}
@@ -121,7 +121,7 @@ export function Footer() {
           <div className="footer-anim">
             <h4 className="font-bold text-white mb-6 uppercase tracking-wider text-xs">Visit Us</h4>
             <ul className="space-y-6 text-sm text-gray-400">
-             
+
               <li className="flex items-center gap-3">
                 <Mail className="text-purple-500 shrink-0" size={18} />
                 <span>adititravels192@gmail.com</span>
@@ -151,8 +151,8 @@ interface SocialIconProps {
 
 function SocialIcon({ Icon, href }: SocialIconProps) {
   return (
-    <a 
-      href={href} 
+    <a
+      href={href}
       className="h-10 w-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-purple-500 hover:border-purple-500 hover:text-white transition-all duration-300"
     >
       <Icon size={18} />

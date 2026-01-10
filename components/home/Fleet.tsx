@@ -230,12 +230,14 @@ export function Fleet() {
               </ul>
 
               <div className="animate-item pt-4">
-                <button className="group w-full md:w-auto relative overflow-hidden rounded-full bg-white text-black px-10 py-4 font-bold text-sm transition-transform active:scale-95 shadow-[0_0_30px_rgba(255,255,255,0.1)]">
-                  <span className="relative z-10 flex items-center justify-center gap-2 group-hover:gap-4 transition-all duration-300">
-                    Book {activeCar.category} Now <ArrowRight size={18} />
-                  </span>
-                  <div className="absolute inset-0 bg-purple-400 transform scale-x-0 origin-left transition-transform duration-300 group-hover:scale-x-100 z-0" />
-                </button>
+                <a href="tel:918127581898">
+                  <button className="group w-full md:w-auto relative overflow-hidden rounded-full bg-white text-black px-10 py-4 font-bold text-sm transition-transform active:scale-95 shadow-[0_0_30px_rgba(255,255,255,0.1)]">
+                    <span className="relative z-10 flex items-center justify-center gap-2 group-hover:gap-4 transition-all duration-300">
+                      Book {activeCar.category} Now <ArrowRight size={18} />
+                    </span>
+                    <div className="absolute inset-0 bg-purple-400 transform scale-x-0 origin-left transition-transform duration-300 group-hover:scale-x-100 z-0" />
+                  </button>
+                </a>
               </div>
 
             </div>
