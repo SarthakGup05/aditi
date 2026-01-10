@@ -13,65 +13,30 @@ type VehicleAPI = {
   category: string;
   pricePerKm: number;
   image: string;
+  description: string;
+  seats: string;
+  bags: string;
+  fuel: string;
+  features: string[];
 };
 
 // --- 2. CONFIGURATION ---
 
 // Define the exact order you want the tabs to appear
 const CATEGORY_ORDER = [
-  "Sedan", 
-  "SUV", 
-  "Premium SUV", 
-  "Traveller", 
-  "Urbania", 
-  "Bus/Tempo" 
+  "Sedan",
+  "SUV",
+  "Premium SUV",
+  "Traveller",
+  "Urbania",
+  "Bus/Tempo"
 ];
-
-// Enrich API data with descriptions & features
-const FLEET_METADATA: Record<string, any> = {
-  "Sedan": {
-    desc: "The ideal choice for city transfers and small families. Compact yet spacious, offering a smooth and economical ride.",
-    features: ["Chauffeur Driven", "AC & Heater", "Daily Sanitization", "Music System"],
-    specs: { seats: "4 Passengers", bags: "2 Bags", fuel: "CNG/Diesel" },
-  },
-  "SUV": {
-    desc: "Perfect for outstation trips to Ayodhya or Agra. Experience superior legroom and powerful performance on highways.",
-    features: ["Captain Seats", "Dual AC", "Roof Carrier", "Extra Boot Space"],
-    specs: { seats: "6-7 Passengers", bags: "4 Bags", fuel: "Diesel" },
-  },
-  "Premium SUV": {
-    desc: "Make a statement with our premium fleet. Unmatched luxury, leather interiors, and VIP treatment for corporate clients.",
-    features: ["VIP Chauffeur", "Climate Control", "Leather Seats", "Priority Support"],
-    specs: { seats: "7 Passengers", bags: "5 Bags", fuel: "Diesel" },
-  },
-  "Traveller": {
-    desc: "The ultimate group travel solution. Perfect for weddings and extended family trips with ample aisle space.",
-    features: ["Pushback Seats", "Individual AC Vents", "Charging Points", "Ample Luggage Space"],
-    specs: { seats: "17/20/26 Seats", bags: "15+ Bags", fuel: "Diesel" }, // ✅ 17, 20, 26
-  },
-  "Urbania": {
-    desc: "The next generation of luxury vans. Force Urbania offers unmatched comfort, modern aesthetics, and superior suspension.",
-    features: ["Luxury Recliners", "Panoramic Windows", "Ambient Lighting", "Superior Suspension"],
-    specs: { seats: "17 Seats", bags: "12+ Bags", fuel: "Diesel" }, // ✅ Fixed to realistic 17
-  },
-  "Bus/Tempo": {
-    desc: "The best solution for large groups and pilgrimages. Travel together in comfort with ample space for luggage.",
-    features: ["Pushback Seats", "Stereo System", "First Aid Kit", "Ample Luggage Space"],
-    specs: { seats: "32/40/50 Seats", bags: "30+ Bags", fuel: "Diesel" }, // ✅ Added 32 here
-  },
-  // Fallback
-  "default": {
-    desc: "Reliable and comfortable taxi service for your journey.",
-    features: ["AC & Heater", "Clean Interiors", "Experienced Driver", "24/7 Support"],
-    specs: { seats: "4+ Passengers", bags: "2+ Bags", fuel: "Diesel" },
-  }
-};
 
 export function Fleet() {
   const [activeTab, setActiveTab] = useState(0);
-  const [vehicles, setVehicles] = useState<any[]>([]);
+  const [vehicles, setVehicles] = useState<VehicleAPI[]>([]);
   const [loading, setLoading] = useState(true);
-  
+
   const containerRef = useRef(null);
   const contentRef = useRef(null);
 
@@ -81,26 +46,10 @@ export function Fleet() {
       try {
         const res = await fetch('/api/vehicles');
         const data = await res.json();
-        
+
         if (Array.isArray(data)) {
-          // A. Merge Metadata
-          let enrichedData = data.map((v: VehicleAPI) => {
-            const meta = FLEET_METADATA[v.category] || FLEET_METADATA["default"];
-            
-            // Hardcode prices for display (26/km & 34/km)
-            let displayPrice = v.pricePerKm;
-            if (v.category === "Traveller") displayPrice = 26;
-            if (v.category === "Urbania") displayPrice = 34;
-
-            return {
-              ...v,
-              ...meta,
-              pricePerKm: displayPrice
-            };
-          });
-
-          // B. SORTING LOGIC (Custom Order)
-          enrichedData.sort((a, b) => {
+          // SORTING LOGIC (Custom Order)
+          data.sort((a, b) => {
             const indexA = CATEGORY_ORDER.indexOf(a.category);
             const indexB = CATEGORY_ORDER.indexOf(b.category);
             const rankA = indexA === -1 ? 999 : indexA;
@@ -108,7 +57,7 @@ export function Fleet() {
             return rankA - rankB;
           });
 
-          setVehicles(enrichedData);
+          setVehicles(data);
         }
       } catch (error) {
         console.error("Failed to load fleet:", error);
@@ -163,7 +112,7 @@ export function Fleet() {
 
   return (
     <section ref={containerRef} id="fleet" className="relative w-full bg-[#050505] py-24 md:py-32 text-white overflow-hidden">
-      
+
       {/* BACKGROUND */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-0 right-0 w-[300px] md:w-[600px] h-[300px] md:h-[600px] bg-purple-900/10 rounded-full blur-[80px] md:blur-[120px]" />
@@ -172,7 +121,7 @@ export function Fleet() {
       </div>
 
       <div className="mx-auto max-w-7xl px-4 md:px-6 relative z-10">
-        
+
         {/* HEADER */}
         <div className="mb-12 md:mb-20 text-center max-w-2xl mx-auto">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-purple-500/30 bg-purple-500/10 text-purple-300 text-xs font-bold uppercase tracking-widest mb-6">
@@ -209,24 +158,24 @@ export function Fleet() {
 
         {/* CONTENT */}
         <div ref={contentRef} className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-16 items-center min-h-[500px]">
-          
+
           {/* LEFT: IMAGE */}
           <div className="lg:col-span-7 w-full order-1 lg:order-1">
             <div className="car-image group relative aspect-[4/3] md:aspect-[16/10] w-full overflow-hidden rounded-3xl border border-white/10 bg-white/5 shadow-2xl">
               <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-transparent opacity-80 z-10" />
-              
+
               {activeCar.image ? (
                 <Image
                   src={activeCar.image}
                   alt={activeCar.title}
                   fill
-                  priority={true} 
+                  priority={true}
                   className="object-cover transition-transform duration-700 group-hover:scale-105 will-change-transform"
                   sizes="(max-width: 768px) 100vw, 60vw"
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center bg-gray-900 text-gray-700">
-                    <CarFront size={64} />
+                  <CarFront size={64} />
                 </div>
               )}
 
@@ -248,15 +197,15 @@ export function Fleet() {
               <div className="animate-item border-l-2 border-purple-500 pl-6">
                 <h3 className="text-3xl md:text-4xl font-semibold text-white mb-4">{activeCar.title}</h3>
                 <p className="text-gray-400 leading-relaxed text-sm md:text-base">
-                  {activeCar.desc}
+                  {activeCar.description || "Premium travel experience."}
                 </p>
               </div>
 
               <div className="animate-item grid grid-cols-3 gap-3 py-6 border-y border-white/10">
                 {[
-                  { icon: Users, label: activeCar.specs?.seats || "4 Seats" },
-                  { icon: Briefcase, label: activeCar.specs?.bags || "2 Bags" },
-                  { icon: Fuel, label: activeCar.specs?.fuel || "Diesel" }
+                  { icon: Users, label: activeCar.seats || "4 Seats" },
+                  { icon: Briefcase, label: activeCar.bags || "2 Bags" },
+                  { icon: Fuel, label: activeCar.fuel || "Diesel" }
                 ].map((spec, i) => (
                   <div key={i} className="flex flex-col items-center justify-center p-4 rounded-2xl bg-white/5 border border-white/5 text-center transition-colors hover:bg-white/10">
                     <spec.icon className="h-5 w-5 text-gray-500 mb-2" />
@@ -274,6 +223,10 @@ export function Fleet() {
                     {feature}
                   </li>
                 ))}
+                {/* Fallback if no features */}
+                {(!activeCar.features || activeCar.features.length === 0) && (
+                  <li className="text-gray-500 italic text-sm">No specific features listed.</li>
+                )}
               </ul>
 
               <div className="animate-item pt-4">

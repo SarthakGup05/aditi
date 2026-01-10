@@ -1,93 +1,58 @@
 generator client {
   provider = "prisma-client-js"
-
 }
 
 datasource db {
   provider = "postgresql"
-  // url      = env("DATABASE_URL")
 }
 
-// --- 1. ADMIN PANEL ACCESS ---
 model Admin {
   id        Int      @id @default(autoincrement())
   name      String
   email     String   @unique
-  password  String   // Store hashed password here
+  password  String
   createdAt DateTime @default(now())
 }
 
-// --- 2. MAIN SERVICE PAGE (The Dynamic Route) ---
 model ServiceRoute {
-  id          Int      @id @default(autoincrement())
-  
-  // URL & Identification
-  slug        String   @unique  // e.g. "lucknow-to-delhi-ncr"
-  isActive    Boolean  @default(true)
-
-  // Hero Section Data
-  title       String   // e.g. "Lucknow to Delhi NCR"
-  tagline     String   // e.g. "The Capital Express - Premium Outstation Taxi"
-  heroImage   String   // URL for the main background image
-  
-  // Stats Strip
-  distance    String   // e.g. "550 km" (String allows "approx 550km")
-  duration    String   // e.g. "8-9 Hours"
-  basePrice   Int      // e.g. 6500 (Store numbers for sorting/logic)
-
-  // Content Section
-  description String   @db.Text // Long description text
-  
-  // Highlights (MySQL doesn't support String[], so we use Json)
-  // Example data: ["Yamuna Expressway Route", "2 Refreshment Breaks"]
-  highlights  Json     
-
-  // --- SEO & META DATA (Your "Chronicals" request) ---
-  metaTitle       String?  // Overrides title for <title> tag
-  metaDescription String?  @db.Text // For <meta name="description">
-  canonicalUrl    String?  // The "Chronicle/Canonical" link for SEO authority
-  keywords        String?  // Comma separated keywords
-
-  // --- RELATIONS ---
-  gallery  RouteGallery[]    // The "Sights Along the Way" images
-  
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id              Int            @id @default(autoincrement())
+  slug            String         @unique
+  isActive        Boolean        @default(true)
+  title           String
+  tagline         String
+  heroImage       String
+  distance        String
+  duration        String
+  basePrice       Int
+  description     String
+  highlights      Json
+  metaTitle       String?
+  metaDescription String?
+  canonicalUrl    String?
+  keywords        String?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  gallery         RouteGallery[]
 }
 
-// --- 3. PRICING CARDS ("Choose Your Comfort") ---
 model VehiclePackage {
-  id          Int      @id @default(autoincrement())
-  
-  // 1. Basic Info
-  category    String   // e.g. "Sedan", "Traveller", "Urbania"
-  title       String   // e.g. "Swift Dzire / Etios"
-  image       String   // Image URL
-  
-  // 2. Pricing
-  pricePerKm  Int      // e.g. 12 (Kept as Int for calculations)
-  
-  // 3. UI Content (New Fields to match your Fleet Component)
-  description String   // e.g. "The ultimate group travel solution..."
-  
-  // 4. Specs (Strings allow flexibility like "17/20/26 Seats")
-  seats       String   // e.g. "4", "17/20/26"
-  bags        String   // e.g. "2 Bags", "15+ Bags"
-  fuel        String   // e.g. "CNG/Diesel"
-  
-  // 5. Features List
-  // Example data: ["Pushback Seats", "Individual AC Vents", "Charging Points"]
-  features    Json     
+  id          Int    @id @default(autoincrement())
+  category    String
+  title       String
+  image       String
+  pricePerKm  Int
+  description String
+  seats       String
+  bags        String
+  fuel        String
+  features    Json
 }
-// --- 4. DESTINATION GALLERY ("Sights Along the Way") ---
+
 model RouteGallery {
-  id        Int      @id @default(autoincrement())
-  imageUrl  String
-  altText   String?  // Good for SEO
-  caption   String?  // "Main Attraction", "River View", etc.
-  
-  // Relation
-  routeId   Int
-  route     ServiceRoute @relation(fields: [routeId], references: [id], onDelete: Cascade)
+  id       Int          @id @default(autoincrement())
+  imageUrl String
+  altText  String?
+  caption  String?
+  routeId  Int
+  route    ServiceRoute @relation(fields: [routeId], references: [id], onDelete: Cascade)
 }

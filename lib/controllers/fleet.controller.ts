@@ -54,8 +54,16 @@ export class FleetController {
       });
 
       return NextResponse.json(newFleet, { status: 201 });
-    } catch (error) {
+    } catch (error: any) {
       console.error("🔥 CREATE Error:", error);
+      
+      if (error.code === 'P2002') {
+        return NextResponse.json(
+            { error: "A vehicle with this title already exists." }, 
+            { status: 409 }
+        );
+      }
+
       return NextResponse.json({ error: "Creation failed" }, { status: 500 });
     }
   }
