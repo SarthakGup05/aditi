@@ -32,14 +32,12 @@ type RouteData = {
 // --- DATA FETCHING ---
 
 async function getRouteBySlug(slug: string): Promise<RouteData | null> {
-  // 🟢 FIX: Force localhost if we are in development mode
   const isDev = process.env.NODE_ENV === 'development';
   const domain = isDev ? 'http://127.0.0.1:3000' : (process.env.NEXT_PUBLIC_APP_URL || 'http://127.0.0.1:3000');
 
   const url = `${domain}/api/routes/${slug}`;
 
   try {
-    // console.log(`📡 Fetching Route from: ${url}`); // Check your terminal to see this
     const res = await fetch(url, { next: { revalidate: 60 } });
 
     if (!res.ok) {
@@ -54,9 +52,7 @@ async function getRouteBySlug(slug: string): Promise<RouteData | null> {
   }
 }
 
-// 2. UPDATE THIS FUNCTION TOO
 async function getVehicles(): Promise<Vehicle[]> {
-  // 🟢 FIX: Force localhost if we are in development mode
   const isDev = process.env.NODE_ENV === 'development';
   const domain = isDev ? 'http://127.0.0.1:3000' : (process.env.NEXT_PUBLIC_APP_URL || 'http://127.0.0.1:3000');
 
@@ -102,6 +98,11 @@ export default async function RouteDetailPage({ params }: { params: Promise<{ sl
 
   // Parse distance number (e.g. "550 km" -> 550)
   const distanceInt = parseInt(route.distance.replace(/\D/g, '')) || 0;
+
+  // Contact Info
+  const phoneNumber = "+918127581898";
+  const whatsAppMsg = `Hi, I am interested in the ${route.title} trip. Please provide more details.`;
+  const whatsAppLink = `https://wa.me/${phoneNumber.replace('+', '')}?text=${encodeURIComponent(whatsAppMsg)}`;
 
   return (
     <main className="min-h-screen w-full bg-[#050505] text-white">
@@ -198,9 +199,13 @@ export default async function RouteDetailPage({ params }: { params: Promise<{ sl
                           <span className="text-xs text-gray-500">Est. Trip Cost</span>
                           <p className="text-2xl font-bold text-green-400">₹{estimatedCost.toLocaleString()}</p>
                         </div>
-                        <button className="px-6 py-2 bg-white text-black font-bold rounded-xl text-sm hover:bg-gray-200">
+                        {/* VEHICLE BOOK BUTTON FIX */}
+                        <a 
+                          href={`tel:${phoneNumber}`}
+                          className="px-6 py-2 bg-white text-black font-bold rounded-xl text-sm hover:bg-gray-200 transition-colors"
+                        >
                           Book
-                        </button>
+                        </a>
                       </div>
                     </div>
                   </div>
@@ -229,12 +234,24 @@ export default async function RouteDetailPage({ params }: { params: Promise<{ sl
                 <span className="text-white font-bold">₹{route.basePrice}</span>
               </div>
             </div>
-            <button className="w-full py-3 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-xl mb-3 flex items-center justify-center gap-2">
+
+            {/* CALL BUTTON FIX */}
+            <a 
+              href={`tel:${phoneNumber}`}
+              className="w-full py-3 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-xl mb-3 flex items-center justify-center gap-2 transition-colors"
+            >
               <Phone size={18} /> Call to Book
-            </button>
-            <button className="w-full py-3 bg-green-600 hover:bg-green-500 text-white font-bold rounded-xl flex items-center justify-center gap-2">
+            </a>
+
+            {/* WHATSAPP BUTTON FIX */}
+            <a 
+              href={whatsAppLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full py-3 bg-green-600 hover:bg-green-500 text-white font-bold rounded-xl flex items-center justify-center gap-2 transition-colors"
+            >
               <MessageCircle size={18} /> WhatsApp
-            </button>
+            </a>
           </div>
         </aside>
 

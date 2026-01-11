@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Users, Briefcase, Fuel, Check, ArrowRight, CarFront, Loader2 } from "lucide-react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
+import { usePublicStore } from "@/lib/store/public-store";
 
 // --- 1. DEFINE TYPES ---
 type VehicleAPI = {
@@ -21,8 +22,6 @@ type VehicleAPI = {
 };
 
 // --- 2. CONFIGURATION ---
-
-// Define the exact order you want the tabs to appear
 const CATEGORY_ORDER = [
   "Sedan",
   "SUV",
@@ -34,39 +33,35 @@ const CATEGORY_ORDER = [
 
 export function Fleet() {
   const [activeTab, setActiveTab] = useState(0);
-  const [vehicles, setVehicles] = useState<VehicleAPI[]>([]);
-  const [loading, setLoading] = useState(true);
+
+  // ZUSTAND INTEGRATION
+  const { vehicles: storeVehicles, isLoadingVehicles: loading, fetchVehicles } = usePublicStore();
+  const [sortedVehicles, setSortedVehicles] = useState<VehicleAPI[]>([]);
 
   const containerRef = useRef(null);
   const contentRef = useRef(null);
 
-  // --- 3. FETCH & SORT DATA ---
+  // --- 3. COMPONENTS SYNC & SORT ---
   useEffect(() => {
-    async function fetchFleet() {
-      try {
-        const res = await fetch('/api/vehicles');
-        const data = await res.json();
+    fetchVehicles();
+  }, [fetchVehicles]);
 
-        if (Array.isArray(data)) {
-          // SORTING LOGIC (Custom Order)
-          data.sort((a, b) => {
-            const indexA = CATEGORY_ORDER.indexOf(a.category);
-            const indexB = CATEGORY_ORDER.indexOf(b.category);
-            const rankA = indexA === -1 ? 999 : indexA;
-            const rankB = indexB === -1 ? 999 : indexB;
-            return rankA - rankB;
-          });
-
-          setVehicles(data);
-        }
-      } catch (error) {
-        console.error("Failed to load fleet:", error);
-      } finally {
-        setLoading(false);
-      }
+  useEffect(() => {
+    if (storeVehicles.length > 0) {
+      const data = [...storeVehicles];
+      // SORTING LOGIC
+      data.sort((a, b) => {
+        const indexA = CATEGORY_ORDER.indexOf(a.category);
+        const indexB = CATEGORY_ORDER.indexOf(b.category);
+        const rankA = indexA === -1 ? 999 : indexA;
+        const rankB = indexB === -1 ? 999 : indexB;
+        return rankA - rankB;
+      });
+      setSortedVehicles(data);
     }
-    fetchFleet();
-  }, []);
+  }, [storeVehicles]);
+
+  const vehicles = sortedVehicles;
 
   // --- 4. GSAP ANIMATION ---
   useGSAP(() => {
@@ -105,7 +100,6 @@ export function Fleet() {
     );
   }
 
-  // Safe check if API returned empty
   if (vehicles.length === 0) return null;
 
   const activeCar = vehicles[activeTab];
@@ -181,7 +175,9 @@ export function Fleet() {
 
               <div className="absolute bottom-4 left-4 right-4 md:bottom-8 md:left-8 md:right-auto z-20">
                 <div className="animate-item bg-black/70 backdrop-blur-md border border-white/10 p-5 rounded-2xl flex items-center justify-between md:block shadow-lg">
-                  <span className="block text-[10px] md:text-xs text-gray-400 uppercase tracking-widest font-bold mb-0 md:mb-1">Rate Per Km</span>
+                  <span className="block text-[10px] md:text-xs text-gray-400 uppercase tracking-widest font-bold mb-0 md:mb-1">
+                    Rate starts with
+                  </span>
                   <div className="flex items-baseline gap-1">
                     <span className="text-2xl md:text-4xl font-bold text-white">₹{activeCar.pricePerKm}</span>
                     <span className="text-sm text-gray-400 font-medium">/km</span>
@@ -223,20 +219,24 @@ export function Fleet() {
                     {feature}
                   </li>
                 ))}
-                {/* Fallback if no features */}
                 {(!activeCar.features || activeCar.features.length === 0) && (
                   <li className="text-gray-500 italic text-sm">No specific features listed.</li>
                 )}
               </ul>
 
               <div className="animate-item pt-4">
-                <a href="tel:918127581898">
-                  <button className="group w-full md:w-auto relative overflow-hidden rounded-full bg-white text-black px-10 py-4 font-bold text-sm transition-transform active:scale-95 shadow-[0_0_30px_rgba(255,255,255,0.1)]">
-                    <span className="relative z-10 flex items-center justify-center gap-2 group-hover:gap-4 transition-all duration-300">
-                      Book {activeCar.category} Now <ArrowRight size={18} />
-                    </span>
-                    <div className="absolute inset-0 bg-purple-400 transform scale-x-0 origin-left transition-transform duration-300 group-hover:scale-x-100 z-0" />
-                  </button>
+                {/* CRITICAL FIX: 
+                   1. Removed <button> wrapper. Used pure <a> tag with button styles.
+                   2. Added +91 to ensure it dials correctly on all devices.
+                */}
+                <a 
+                  href="tel:+918127581898"
+                  className="group inline-block w-full md:w-auto relative overflow-hidden rounded-full bg-white text-black px-10 py-4 font-bold text-sm transition-transform active:scale-95 shadow-[0_0_30px_rgba(255,255,255,0.1)] text-center cursor-pointer select-none"
+                >
+                  <span className="relative z-10 flex items-center justify-center gap-2 group-hover:gap-4 transition-all duration-300">
+                    Book {activeCar.category} Now <ArrowRight size={18} />
+                  </span>
+                  <div className="absolute inset-0 bg-purple-400 transform scale-x-0 origin-left transition-transform duration-300 group-hover:scale-x-100 z-0" />
                 </a>
               </div>
 

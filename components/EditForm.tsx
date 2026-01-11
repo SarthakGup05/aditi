@@ -139,6 +139,21 @@ export function EditRouteModal({ slug }: EditRouteModalProps) {
 
       if (!res.ok) throw new Error("Failed to update");
 
+      // Invalidate existing cache so Navbar picks up new changes immediately
+      await fetch("/api/revalidate?path=/"); // Optional Next.js revalidate
+      try {
+        // We can also manually invalidate the store if we were inside a React component context that has access to the store,
+        // or we can import the store directly if it wasn't a hook. 
+        // Since usePublicStore is a hook, we can't use it easily in non-component logic without rules of hooks, 
+        // BUT zustand stores can be used outside components via .getState().
+
+        // Dynamic import to avoid circular dep issues during SSR if any, though unlikely here.
+        const { usePublicStore } = await import("@/lib/store/public-store");
+        usePublicStore.getState().fetchRoutes(true); // Force refetch
+      } catch (e) {
+        console.error("Cache invalidation error", e);
+      }
+
       router.refresh();
       setIsOpen(false);
     } catch (error) {

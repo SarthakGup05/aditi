@@ -20,7 +20,7 @@ export function Hero() {
   // Removed individual refs for animation targets to prevent null errors
   // We will use className selectors instead.
 
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  // Removed unused isMenuOpen state
 
   // --- SCROLL HANDLER ---
   const scrollToFleet = () => {

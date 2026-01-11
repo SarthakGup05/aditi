@@ -105,21 +105,21 @@ function ActionButtons({
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleDelete = async (e: React.MouseEvent) => {
-    // CRITICAL FIX: Stop event from bubbling up to row clicks
-    e.stopPropagation(); 
+    // CRITICAL FIX: Stop propagation immediately
     e.preventDefault();
-
+    e.stopPropagation();
+    
     if (!confirm("Are you sure you want to delete this vehicle?")) return;
 
     setIsDeleting(true);
 
     try {
       const res = await fetch(`/api/vehicles/${id}`, { 
-        method: "DELETE" 
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" }
       });
 
       if (!res.ok) {
-        // Log the actual error text from the server
         const errorText = await res.text();
         throw new Error(errorText || "Failed to delete");
       }
@@ -129,15 +129,18 @@ function ActionButtons({
       router.refresh();
 
     } catch (error) {
-      alert("Something went wrong while deleting. Check console for details.");
       console.error("DELETE ERROR:", error);
+      alert("Something went wrong while deleting. Check console for details.");
     } finally {
       setIsDeleting(false);
     }
   };
 
   return (
-    <div className="flex items-center justify-end gap-2" onClick={(e) => e.stopPropagation()}>
+    <div 
+      className="flex items-center justify-end gap-2" 
+      onClick={(e) => e.stopPropagation()} // Stop row clicks on the container
+    >
       {/* View Details (Read Only) */}
       <EditFleetModal id={id} isReadOnly={true} />
       
@@ -146,9 +149,10 @@ function ActionButtons({
       
       {/* Delete Button */}
       <button
+        type="button" // CRITICAL FIX: Prevent form submission behavior
         onClick={handleDelete}
         disabled={isDeleting}
-        className="p-2 hover:bg-red-500/20 rounded-lg text-red-400 hover:text-red-300 transition-colors disabled:opacity-50"
+        className="p-2 hover:bg-red-500/20 rounded-lg text-red-400 hover:text-red-300 transition-colors disabled:opacity-50 relative z-10"
         title="Delete Vehicle"
       >
         {isDeleting ? (

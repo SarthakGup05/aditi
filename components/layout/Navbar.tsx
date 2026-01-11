@@ -7,6 +7,7 @@ import {
   Menu, X, Phone, ArrowRight, ChevronDown, Loader2, CarFront
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { usePublicStore } from "@/lib/store/public-store";
 
 interface Route {
   id: number;
@@ -20,34 +21,21 @@ export function Navbar() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false); // Desktop Dropdown State
   const [scrolled, setScrolled] = useState(false);
 
-  // Data State
-  const [routes, setRoutes] = useState<Route[]>([]);
-  const [isLoadingRoutes, setIsLoadingRoutes] = useState(true);
+  // Data State - Managed by Zustand
+  // const [routes, setRoutes] = useState<Route[]>([]);
+  // const [isLoadingRoutes, setIsLoadingRoutes] = useState(true);
+
+  // ZUSTAND INTEGRATION
+  const { routes, isLoadingRoutes, fetchRoutes } = usePublicStore();
 
   // Refs for "Click Outside" detection
   const dropdownRef = useRef<HTMLDivElement>(null);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
 
-  // 1. PERFORMANCE: Fetch Routes once and cache in state
+  // 1. PERFORMANCE: Fetch Routes via Store (Cached)
   useEffect(() => {
-    const fetchRoutes = async () => {
-      try {
-        if (routes.length > 0) return; // Prevent re-fetching
-
-        const res = await fetch("/api/routes");
-        if (res.ok) {
-          const data = await res.json();
-          setRoutes(data);
-        }
-      } catch (error) {
-        console.error("Navbar Error:", error);
-      } finally {
-        setIsLoadingRoutes(false);
-      }
-    };
-
     fetchRoutes();
-  }, [routes.length]);
+  }, [fetchRoutes]);
 
   // 2. UX: Auto-close menu when route changes
   useEffect(() => {
