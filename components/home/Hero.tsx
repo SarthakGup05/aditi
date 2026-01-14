@@ -128,7 +128,7 @@ export function Hero() {
 
             {/* Call to Actions */}
             <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
-              <a href="tel:918127581898">
+              <a href="tel:8127581898">
                 <Button className="h-12 w-full md:w-auto rounded-full bg-white text-black hover:bg-gray-200 px-8 text-base font-bold transition-transform active:scale-95">
                   Call Taxi Now
                 </Button>

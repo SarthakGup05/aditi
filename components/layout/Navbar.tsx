@@ -167,7 +167,7 @@ export function Navbar() {
 
           {/* --- CTA & MOBILE TOGGLE --- */}
           <div className="flex items-center gap-4 z-[101]">
-            <a href="tel:918127581898"> {/* ✅ Phone Link */}
+            <a href="tel:8127581898"> {/* ✅ Phone Link */}
               <Button
                 className={`hidden md:flex rounded-full px-6 font-semibold transition-all ${scrolled
                   ? "bg-white text-black hover:bg-gray-200"
@@ -242,7 +242,7 @@ export function Navbar() {
           </Link>
 
           <div className="mt-auto pt-6 space-y-4">
-            <a href="tel:918127581898" className="block w-full"> {/* ✅ Phone Link */}
+            <a href="tel:8127581898" className="block w-full"> {/* ✅ Phone Link */}
               <Button className="w-full h-14 rounded-2xl bg-white text-black font-bold text-lg hover:bg-gray-200 flex items-center justify-center gap-2">
                 <Phone size={20} /> Book a Taxi Now
               </Button>

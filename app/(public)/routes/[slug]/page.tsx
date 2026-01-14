@@ -100,7 +100,7 @@ export default async function RouteDetailPage({ params }: { params: Promise<{ sl
   const distanceInt = parseInt(route.distance.replace(/\D/g, '')) || 0;
 
   // Contact Info
-  const phoneNumber = "+918127581898";
+  const phoneNumber = "+8127581898";
   const whatsAppMsg = `Hi, I am interested in the ${route.title} trip. Please provide more details.`;
   const whatsAppLink = `https://wa.me/${phoneNumber.replace('+', '')}?text=${encodeURIComponent(whatsAppMsg)}`;
 

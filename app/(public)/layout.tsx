@@ -39,7 +39,7 @@ export default function PublicLayout({
         {children}
       </main>
       <Footer />
-      <FloatingContact phone="918127581898" whatsapp="918127581898" />
+      <FloatingContact phone="8127581898" whatsapp="8127581898" />
     </div>
   );
 

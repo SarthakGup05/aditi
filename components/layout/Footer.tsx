@@ -66,7 +66,7 @@ export function Footer() {
           <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
             {/* WhatsApp */}
             <a
-              href="https://wa.me/918127581898"
+              href="https://wa.me/8127581898"
               target="_blank"
               rel="noreferrer"
               className="group flex-1 flex items-center justify-center gap-3 bg-[#25D366]/10 border border-[#25D366]/20 hover:bg-[#25D366]/20 text-[#25D366] px-8 py-4 rounded-xl transition-all active:scale-95"
@@ -77,7 +77,7 @@ export function Footer() {
 
             {/* Phone */}
             <a
-              href="tel:918127581898"
+              href="tel:8127581898"
               className="group flex-1 flex items-center justify-center gap-3 bg-white text-black hover:bg-gray-200 px-8 py-4 rounded-xl transition-all active:scale-95"
             >
               <Phone size={20} className="group-hover:rotate-12 transition-transform" />
