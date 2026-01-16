@@ -176,14 +176,7 @@ export function Hero() {
 
       {/* --- SOCIAL SIDEBAR --- */}
       {/* Added 'hero-social' class for GSAP */}
-      <div className="hero-social absolute right-8 top-1/2 hidden -translate-y-1/2 flex-col gap-6 text-gray-500 md:flex z-50">
-        <a href="#" aria-label="Youtube" className="hover:text-white hover:scale-110 cursor-pointer transition-all"><Youtube size={20} /></a>
-        <a href="#" aria-label="Twitter" className="hover:text-white hover:scale-110 cursor-pointer transition-all"><Twitter size={20} /></a>
-        <a href="#" aria-label="LinkedIn" className="hover:text-white hover:scale-110 cursor-pointer transition-all"><Linkedin size={20} /></a>
-        <a href="#" aria-label="Instagram" className="hover:text-white hover:scale-110 cursor-pointer transition-all"><Instagram size={20} /></a>
-        <div className="h-12 w-px bg-white/10 mx-auto" />
-      </div>
-
+     
     </section>
   );
 }
