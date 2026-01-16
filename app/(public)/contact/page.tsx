@@ -54,7 +54,7 @@ export default function ContactPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 mb-8">
             
             {/* CALL CARD */}
-            <a href="tel:+919919999999" className="contact-card group relative overflow-hidden rounded-[2rem] bg-[#0A0A0A] border border-white/10 p-8 md:p-12 hover:border-purple-500/50 transition-all duration-300">
+            <a href="tel:8127581898" className="contact-card group relative overflow-hidden rounded-[2rem] bg-[#0A0A0A] border border-white/10 p-8 md:p-12 hover:border-purple-500/50 transition-all duration-300">
               <div className="absolute inset-0 bg-purple-900/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               
               <div className="relative z-10 flex flex-col h-full justify-between gap-8">
@@ -69,7 +69,7 @@ export default function ContactPage() {
 
                 <div>
                   <h3 className="text-gray-400 font-medium mb-2 uppercase tracking-wider text-xs md:text-sm">Talk to an expert</h3>
-                  <div className="text-3xl md:text-5xl font-bold text-white mb-2">+91 99199 99999</div>
+                  <div className="text-3xl md:text-5xl font-bold text-white mb-2">8127581898</div>
                   <p className="text-purple-400 text-sm font-medium flex items-center gap-2">
                     <span className="relative flex h-2 w-2">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
@@ -82,7 +82,7 @@ export default function ContactPage() {
             </a>
 
             {/* WHATSAPP CARD */}
-            <a href="https://wa.me/919919999999" target="_blank" className="contact-card group relative overflow-hidden rounded-[2rem] bg-[#0A0A0A] border border-white/10 p-8 md:p-12 hover:border-[#25D366]/50 transition-all duration-300">
+            <a href="https://wa.me/8127581898" target="_blank" className="contact-card group relative overflow-hidden rounded-[2rem] bg-[#0A0A0A] border border-white/10 p-8 md:p-12 hover:border-[#25D366]/50 transition-all duration-300">
               <div className="absolute inset-0 bg-green-900/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               
               <div className="relative z-10 flex flex-col h-full justify-between gap-8">
@@ -109,14 +109,14 @@ export default function ContactPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             
             {/* Email */}
-            <a href="mailto:info@adititravels.com" className="contact-card group p-8 rounded-3xl bg-[#0A0A0A] border border-white/10 hover:bg-white/5 transition-colors">
+            <a href="mailto:adititravels192@gmail.com<" className="contact-card group p-8 rounded-3xl bg-[#0A0A0A] border border-white/10 hover:bg-white/5 transition-colors">
               <div className="flex items-center gap-4 mb-4">
                 <div className="p-3 rounded-full bg-blue-900/20 text-blue-400">
                   <Mail size={20} />
                 </div>
                 <span className="text-sm font-bold text-gray-400 uppercase tracking-widest">Email</span>
               </div>
-              <p className="text-lg md:text-xl font-medium text-white group-hover:text-blue-400 transition-colors break-all">info@adititravels.com</p>
+              <p className="text-lg md:text-xl font-medium text-white group-hover:text-blue-400 transition-colors break-all">adititravels192@gmail.com</p>
             </a>
 
             {/* Address */}
@@ -164,7 +164,7 @@ export default function ContactPage() {
         </div>
       </section> */}
 
-      <FloatingContact phone="+919919999999" whatsapp="919919999999" />
+      <FloatingContact phone="8127581898" whatsapp="8127581898" />
     </main>
   );
 }

@@ -13,8 +13,8 @@ interface FloatingContactProps {
 }
 
 export function FloatingContact({ 
-  phone = "+910000000000", 
-  whatsapp = "910000000000",
+  phone = "8127581898", 
+  whatsapp = "8127581898",
   message = "Hi Aditi Travels, I need a taxi for..." 
 }: FloatingContactProps) {
   

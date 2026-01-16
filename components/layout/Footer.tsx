@@ -12,7 +12,8 @@ import {
   ArrowUpRight,
   Mail,
   FileText,
-  LucideIcon
+  LucideIcon,
+  PhoneCall
 } from "lucide-react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
@@ -127,6 +128,10 @@ export function Footer() {
                 <span>adititravels192@gmail.com</span>
               </li>
             </ul>
+            <li className="mt-6 flex items-center gap-4">
+              <PhoneCall className="text-purple-500 shrink-0" size={18} />
+              <span>8127581898</span>
+            </li>
           </div>
 
         </div>
